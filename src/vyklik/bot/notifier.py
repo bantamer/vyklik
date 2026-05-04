@@ -113,6 +113,15 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
                     sub.user_id,
                     t("alert_called", lang=lang, name=name, ticket=sub.my_ticket),
                 )
+                # Ticket considered "redeemed" — clear it so a new series tomorrow
+                # doesn't trigger spurious alerts. Threshold goes with it (no
+                # ticket → nothing to threshold).
+                async with session() as s:
+                    sub_db = await repo.get_subscription_by_id(s, sub.id)
+                    if sub_db is not None:
+                        sub_db.my_ticket = None
+                        sub_db.alert_n_before = None
+                    await s.commit()
         elif sub.alert_n_before is not None and 0 < dist <= sub.alert_n_before:
             event_key = f"before:{sub.my_ticket}:{sub.alert_n_before}"
             async with session() as s:
