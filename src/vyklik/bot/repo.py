@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -14,7 +14,7 @@ async def get_or_create_user(session: AsyncSession, tg_id: int, lang_hint: str =
         session.add(user)
         await session.flush()
     else:
-        user.last_seen = datetime.now(timezone.utc)
+        user.last_seen = datetime.now(UTC)
         if user.blocked:
             user.blocked = False
     return user
@@ -39,8 +39,8 @@ async def list_queues(session: AsyncSession) -> list[Queue]:
 
 
 async def latest_snapshot(session: AsyncSession, queue_id: int) -> Snapshot | None:
-    stmt = select(Snapshot).where(Snapshot.queue_id == queue_id).order_by(Snapshot.ts.desc()).limit(
-        1
+    stmt = (
+        select(Snapshot).where(Snapshot.queue_id == queue_id).order_by(Snapshot.ts.desc()).limit(1)
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
@@ -60,9 +60,7 @@ async def get_subscription_by_id(session: AsyncSession, sub_id: int) -> Subscrip
     return await session.get(Subscription, sub_id)
 
 
-async def upsert_subscription(
-    session: AsyncSession, user_id: int, queue_id: int
-) -> Subscription:
+async def upsert_subscription(session: AsyncSession, user_id: int, queue_id: int) -> Subscription:
     sub = await get_subscription(session, user_id, queue_id)
     if sub is None:
         sub = Subscription(user_id=user_id, queue_id=queue_id, alert_on_my_call=True)
@@ -79,9 +77,7 @@ async def delete_subscription(session: AsyncSession, sub_id: int) -> None:
 
 async def list_subscriptions(session: AsyncSession, user_id: int) -> list[Subscription]:
     stmt = (
-        select(Subscription)
-        .where(Subscription.user_id == user_id)
-        .order_by(Subscription.queue_id)
+        select(Subscription).where(Subscription.user_id == user_id).order_by(Subscription.queue_id)
     )
     result = await session.execute(stmt)
     return list(result.scalars())
@@ -101,9 +97,7 @@ async def list_subscriptions_for_fanout(
     return list(result.scalars())
 
 
-async def list_subs_with_my_ticket(
-    session: AsyncSession, queue_id: int
-) -> list[Subscription]:
+async def list_subs_with_my_ticket(session: AsyncSession, queue_id: int) -> list[Subscription]:
     stmt = (
         select(Subscription)
         .join(User, User.telegram_id == Subscription.user_id)

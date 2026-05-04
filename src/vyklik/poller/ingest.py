@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -22,7 +22,7 @@ async def upsert_queues(
 ) -> None:
     if not snapshots:
         return
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     rows = []
     for s in snapshots:
         pl, ru = display_for(s.id, s.raw_name, catalog)
@@ -114,7 +114,7 @@ async def ingest(
     if not snapshots:
         return []
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     queue_ids = [s.id for s in snapshots]
     prev_map = await fetch_previous(session, queue_ids)
 

@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 
 from aiogram import Bot, Dispatcher
@@ -10,6 +11,7 @@ from vyklik.bot.commands import set_my_commands
 from vyklik.bot.handlers import all_routers
 from vyklik.bot.notifier import notifier_loop
 from vyklik.config import settings
+from vyklik.healthz import serve as serve_healthz
 
 
 async def main_async() -> None:
@@ -31,14 +33,14 @@ async def main_async() -> None:
     log.info("bot starting (long polling)")
 
     notifier_task = asyncio.create_task(notifier_loop(bot))
+    healthz_task = asyncio.create_task(serve_healthz())
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
-        notifier_task.cancel()
-        try:
-            await notifier_task
-        except asyncio.CancelledError:
-            pass
+        for task in (notifier_task, healthz_task):
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
         await bot.session.close()
 
 

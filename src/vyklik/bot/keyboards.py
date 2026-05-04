@@ -15,19 +15,17 @@ def language_picker() -> InlineKeyboardMarkup:
     )
 
 
-def queues_list(queues: list[Queue], snapshots: dict[int, Snapshot], lang: str) -> InlineKeyboardMarkup:
+def queues_list(
+    queues: list[Queue], snapshots: dict[int, Snapshot], lang: str
+) -> InlineKeyboardMarkup:
     rows = []
     for q in queues:
         snap = snapshots.get(q.id)
         status = (
-            t("status_open", lang=lang)
-            if snap and snap.enabled
-            else t("status_closed", lang=lang)
+            t("status_open", lang=lang) if snap and snap.enabled else t("status_closed", lang=lang)
         )
         name = q.display_pl if lang == "pl" else q.display_ru
-        rows.append(
-            [InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"q:{q.id}")]
-        )
+        rows.append([InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"q:{q.id}")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -35,7 +33,12 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
     rows: list[list[InlineKeyboardButton]] = []
     if sub is None:
         rows.append(
-            [InlineKeyboardButton(text=t("btn_subscribe", lang=lang), callback_data=f"sub:{queue.id}")]
+            [
+                InlineKeyboardButton(
+                    text=t("btn_subscribe", lang=lang),
+                    callback_data=f"sub:{queue.id}",
+                )
+            ]
         )
     else:
         rows.append(
@@ -87,9 +90,7 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                 )
             ]
         )
-    rows.append(
-        [InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues")]
-    )
+    rows.append([InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -98,7 +99,5 @@ def mysubs_list(items: list[tuple[Subscription, Queue]], lang: str) -> InlineKey
     for sub, q in items:
         name = q.display_pl if lang == "pl" else q.display_ru
         suffix = f" · {sub.my_ticket}" if sub.my_ticket else ""
-        rows.append(
-            [InlineKeyboardButton(text=f"{name}{suffix}", callback_data=f"q:{q.id}")]
-        )
+        rows.append([InlineKeyboardButton(text=f"{name}{suffix}", callback_data=f"q:{q.id}")])
     return InlineKeyboardMarkup(inline_keyboard=rows)

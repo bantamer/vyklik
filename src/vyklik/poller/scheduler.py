@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -16,7 +16,7 @@ log = logging.getLogger("vyklik.poller.scheduler")
 
 
 async def _run_once(catalog: dict[int, QueueDisplay], schedule: dict[int, tuple[int, int]]) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if not is_working(now, schedule):
         log.debug("outside work hours, skipping poll")
         return
@@ -48,7 +48,7 @@ async def run() -> None:
         _run_once,
         trigger=IntervalTrigger(seconds=settings.poll_interval_seconds),
         kwargs={"catalog": catalog, "schedule": schedule},
-        next_run_time=datetime.now(timezone.utc),
+        next_run_time=datetime.now(UTC),
         max_instances=1,
         coalesce=True,
     )

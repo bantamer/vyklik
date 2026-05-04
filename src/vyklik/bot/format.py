@@ -19,9 +19,7 @@ def queue_card_text(queue: Queue, snap: Snapshot | None, lang: str) -> str:
     name = queue.display_pl if lang == "pl" else queue.display_ru
     if snap is None:
         return f"<b>{name}</b>\n\n{t('queue_no_data', lang=lang)}"
-    status = (
-        t("status_open", lang=lang) if snap.enabled else t("status_closed", lang=lang)
-    )
+    status = t("status_open", lang=lang) if snap.enabled else t("status_closed", lang=lang)
     return t(
         "queue_card",
         lang=lang,

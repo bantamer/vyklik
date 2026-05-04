@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 
 from vyklik.duw_client import QueueSnapshot
 from vyklik.poller.diff import compute_events
 
-NOW = datetime(2026, 5, 4, 12, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 5, 4, 12, 0, tzinfo=UTC)
 
 
 def _q(**overrides) -> QueueSnapshot:

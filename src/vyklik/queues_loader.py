@@ -32,9 +32,7 @@ def load(path: Path | None = None) -> dict[int, QueueDisplay]:
     return out
 
 
-def display_for(
-    qid: int, raw_name: str, catalog: dict[int, QueueDisplay]
-) -> tuple[str, str]:
+def display_for(qid: int, raw_name: str, catalog: dict[int, QueueDisplay]) -> tuple[str, str]:
     """Return (display_pl, display_ru), falling back to raw_name if not curated."""
     if qid in catalog:
         d = catalog[qid]

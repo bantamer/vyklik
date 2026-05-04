@@ -1,3 +1,5 @@
+import contextlib
+
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
@@ -34,7 +36,5 @@ async def on_pick_lang(cb: CallbackQuery) -> None:
         await s.commit()
     await cb.answer(t("language_set", lang=chosen))
     if cb.message is not None and hasattr(cb.message, "edit_text"):
-        try:
+        with contextlib.suppress(Exception):
             await cb.message.edit_text(t("language_set", lang=chosen))
-        except Exception:
-            pass

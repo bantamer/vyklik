@@ -44,7 +44,9 @@ TR = {
     "sub_removed": "Subskrypcja usunięta.",
     # Ticket entry
     "ticket_prompt": "Wyślij swój numerek (np. <code>G045</code>):",
-    "ticket_invalid": "Numerek powinien być w formacie litera + cyfry (np. G045). Spróbuj jeszcze raz.",
+    "ticket_invalid": (
+        "Numerek powinien być w formacie litera + cyfry (np. G045). Spróbuj jeszcze raz."
+    ),
     "ticket_set": "Numerek zapisany: <b>{ticket}</b>.",
     "ticket_cleared": "Numerek usunięty.",
     "threshold_prompt": (
@@ -54,15 +56,11 @@ TR = {
     "threshold_set": "Powiadomię, gdy do twojego numerka zostanie ≤ {n}.",
     "threshold_off": "Powiadomienie o zbliżaniu się wyłączone.",
     # Alerts
-    "alert_called": (
-        "🎯 <b>{name}</b>\nWywołano twój numerek <b>{ticket}</b>!"
-    ),
+    "alert_called": ("🎯 <b>{name}</b>\nWywołano twój numerek <b>{ticket}</b>!"),
     "alert_close": (
         "⏳ <b>{name}</b>\nDo twojego numerka <b>{my}</b> zostało {n}. "
         "Wywołany właśnie: <b>{current}</b>."
     ),
     "alert_opened": "📢 <b>{name}</b>\nRejestracja właśnie się otworzyła!",
-    "alert_slots": (
-        "🪑 <b>{name}</b>\nPojawiło się {n} wolnych miejsc — biegnij się zapisać!"
-    ),
+    "alert_slots": ("🪑 <b>{name}</b>\nPojawiło się {n} wolnych miejsc — biegnij się zapisać!"),
 }

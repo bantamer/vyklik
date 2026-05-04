@@ -7,7 +7,6 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter
 
 from vyklik.bot import repo, tickets
-from vyklik.bot.format import fmt_seconds  # noqa: F401  (kept for future alert formatting)
 from vyklik.db import asyncpg_connect, session
 from vyklik.i18n import t
 from vyklik.poller.ingest import NOTIFY_CHANNEL
@@ -109,7 +108,11 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
                 inserted = await repo.record_sent(s, sub.id, event_key)
                 await s.commit()
             if inserted:
-                await _send(bot, sub.user_id, t("alert_called", lang=lang, name=name, ticket=sub.my_ticket))
+                await _send(
+                    bot,
+                    sub.user_id,
+                    t("alert_called", lang=lang, name=name, ticket=sub.my_ticket),
+                )
         elif sub.alert_n_before is not None and 0 < dist <= sub.alert_n_before:
             event_key = f"before:{sub.my_ticket}:{sub.alert_n_before}"
             async with session() as s:

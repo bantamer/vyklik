@@ -51,3 +51,5 @@ services:
       migrate:
         condition: service_completed_successfully
     command: ["python", "-m", "vyklik.bot"]
+    ports:
+      - "127.0.0.1:8080:8080"  # healthz; bind to localhost, expose via reverse proxy if needed

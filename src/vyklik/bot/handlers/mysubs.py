@@ -23,4 +23,7 @@ async def cmd_mysubs(message: Message) -> None:
         await message.answer(t("no_subs", lang=lang))
         return
     items = [(sub, queues[sub.queue_id]) for sub in subs if sub.queue_id in queues]
-    await message.answer(t("mysubs_header", lang=lang), reply_markup=keyboards.mysubs_list(items, lang))
+    await message.answer(
+        t("mysubs_header", lang=lang),
+        reply_markup=keyboards.mysubs_list(items, lang),
+    )
