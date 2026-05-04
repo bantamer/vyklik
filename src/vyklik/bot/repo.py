@@ -8,15 +8,19 @@ from vyklik.models import Queue, SentAlert, Snapshot, Subscription, User
 
 
 async def get_or_create_user(session: AsyncSession, tg_id: int, lang_hint: str = "pl") -> User:
+    # Atomic upsert: avoids a race when two updates from the same user land
+    # concurrently and both see "no row yet" between SELECT and INSERT.
+    stmt = (
+        pg_insert(User)
+        .values(telegram_id=tg_id, language=lang_hint, blocked=False)
+        .on_conflict_do_update(
+            index_elements=[User.telegram_id],
+            set_={"last_seen": datetime.now(UTC), "blocked": False},
+        )
+    )
+    await session.execute(stmt)
     user = await session.get(User, tg_id)
-    if user is None:
-        user = User(telegram_id=tg_id, language=lang_hint, blocked=False)
-        session.add(user)
-        await session.flush()
-    else:
-        user.last_seen = datetime.now(UTC)
-        if user.blocked:
-            user.blocked = False
+    assert user is not None  # just upserted
     return user
 
 
