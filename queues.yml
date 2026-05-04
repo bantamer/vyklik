@@ -3,60 +3,63 @@
 # Edit these freely — the poller upserts on raw_name, the bot reads display_pl/display_ru.
 # Add new queue IDs as DUW publishes them. Unknown IDs are still tracked but display
 # the raw API name until added here.
+#
+# Keep names short — Telegram inline buttons truncate without wrapping.
+# Rule of thumb: aim for ≤28 visible characters (status emoji + space + name).
 
 queues:
   # Passports
   - id: 14
-    display_pl: "Paszport — złożenie wniosku (Sala B)"
-    display_ru: "Паспорт — подача заявления (зал B)"
+    display_pl: "Paszport — wniosek (Sala B)"
+    display_ru: "Паспорт — подача (зал B)"
   - id: 15
     display_pl: "Paszport — odbiór (Sala B)"
-    display_ru: "Паспорт — получение (зал B)"
+    display_ru: "Паспорт — выдача (зал B)"
   - id: 99
-    display_pl: "Paszport — wniosek (rezerwacja online)"
-    display_ru: "Паспорт — подача (онлайн-запись)"
+    display_pl: "Paszport — wniosek (online)"
+    display_ru: "Паспорт — подача (online)"
   - id: 100
-    display_pl: "Paszport — odbiór (rezerwacja online)"
-    display_ru: "Паспорт — получение (онлайн-запись)"
+    display_pl: "Paszport — odbiór (online)"
+    display_ru: "Паспорт — выдача (online)"
   - id: 5000001
-    display_pl: "Informacja paszportowa"
-    display_ru: "Информация по паспортам"
+    display_pl: "Paszporty — info"
+    display_ru: "Паспорта — инфо"
 
   # Foreigners — applications
   - id: 27
-    display_pl: "Osobiste stawiennictwo (cudzoziemcy)"
-    display_ru: "Личная явка (иностранцы)"
+    display_pl: "Cudzoziemcy — stawiennictwo"
+    display_ru: "Иностранцы — личная явка"
   - id: 20
     display_pl: "UE / Zaproszenia / PDP"
     display_ru: "ЕС / Приглашения / PDP"
   - id: 500000020
-    display_pl: "Legalizacja pobytu (tylko z rezerwacją)"
-    display_ru: "Легализация пребывания (только по записи)"
+    display_pl: "Legalizacja pobytu (rez.)"
+    display_ru: "Легализация (по записи)"
 
   # Foreigners — cards
   - id: 24
-    display_pl: "Odbiór karty pobytu"
-    display_ru: "Получение карты побыту"
+    display_pl: "Karta pobytu — odbiór"
+    display_ru: "Карта побыту — выдача"
   - id: 118
-    display_pl: "Odbiór karty pobytu — wieczorami"
-    display_ru: "Получение карты побыту — вечерами"
+    display_pl: "Karta pobytu — wieczory"
+    display_ru: "Карта побыту — вечера"
   - id: 119
-    display_pl: "Wymiana karty pobytu"
-    display_ru: "Обмен карты побыту"
+    display_pl: "Karta pobytu — wymiana"
+    display_ru: "Карта побыту — обмен"
   - id: 112
-    display_pl: "Odbiór karty (rezerwacja online)"
-    display_ru: "Получение карты (онлайн-запись)"
+    display_pl: "Karta — odbiór (online)"
+    display_ru: "Карта — выдача (online)"
   - id: 113
-    display_pl: "Odbiór karty pobytu — FAMI (rezerwacja online)"
-    display_ru: "Получение карты побыту — FAMI (онлайн-запись)"
+    display_pl: "FAMI — karta odbiór (online)"
+    display_ru: "FAMI — карта выдача (online)"
 
   # FAMI services
   - id: 111
-    display_pl: "Punkt informacyjno-doradczy FAMI"
-    display_ru: "Информационно-консультационный пункт FAMI"
+    display_pl: "FAMI — info"
+    display_ru: "FAMI — инфо"
   - id: 117
-    display_pl: "Tłumaczenia dokumentów FAMI"
-    display_ru: "Перевод документов FAMI"
+    display_pl: "FAMI — tłumaczenia"
+    display_ru: "FAMI — переводы"
 
   # Other
   - id: 25
@@ -67,18 +70,18 @@ queues:
     display_ru: "Печати / stamps"
   - id: 115
     display_pl: "Załączniki"
-    display_ru: "Приложения к делу"
+    display_ru: "Приложения"
   - id: 120
-    display_pl: "Obywatelstwo i świadczenia"
-    display_ru: "Гражданство и пособия"
+    display_pl: "Obywatelstwo / świadczenia"
+    display_ru: "Гражданство / пособия"
   - id: 122
     display_pl: "Reklamacje"
     display_ru: "Рекламации"
 
   # Airport
   - id: 123
-    display_pl: "Lotnisko — paszport biometryczny (wniosek)"
-    display_ru: "Аэропорт — биометрический паспорт (подача)"
+    display_pl: "Lotnisko — paszp. wniosek"
+    display_ru: "Аэропорт — паспорт подача"
   - id: 124
-    display_pl: "Lotnisko — paszport biometryczny (odbiór)"
-    display_ru: "Аэропорт — биометрический паспорт (получение)"
+    display_pl: "Lotnisko — paszp. odbiór"
+    display_ru: "Аэропорт — паспорт выдача"
