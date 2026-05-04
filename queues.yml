@@ -1,0 +1,84 @@
+# DUW Wrocław queue catalog.
+# Maps DUW queue IDs (returned by the status API) to curated short display names.
+# Edit these freely — the poller upserts on raw_name, the bot reads display_pl/display_ru.
+# Add new queue IDs as DUW publishes them. Unknown IDs are still tracked but display
+# the raw API name until added here.
+
+queues:
+  # Passports
+  - id: 14
+    display_pl: "Paszport — złożenie wniosku (Sala B)"
+    display_ru: "Паспорт — подача заявления (зал B)"
+  - id: 15
+    display_pl: "Paszport — odbiór (Sala B)"
+    display_ru: "Паспорт — получение (зал B)"
+  - id: 99
+    display_pl: "Paszport — wniosek (rezerwacja online)"
+    display_ru: "Паспорт — подача (онлайн-запись)"
+  - id: 100
+    display_pl: "Paszport — odbiór (rezerwacja online)"
+    display_ru: "Паспорт — получение (онлайн-запись)"
+  - id: 5000001
+    display_pl: "Informacja paszportowa"
+    display_ru: "Информация по паспортам"
+
+  # Foreigners — applications
+  - id: 27
+    display_pl: "Osobiste stawiennictwo (cudzoziemcy)"
+    display_ru: "Личная явка (иностранцы)"
+  - id: 20
+    display_pl: "UE / Zaproszenia / PDP"
+    display_ru: "ЕС / Приглашения / PDP"
+  - id: 500000020
+    display_pl: "Legalizacja pobytu (tylko z rezerwacją)"
+    display_ru: "Легализация пребывания (только по записи)"
+
+  # Foreigners — cards
+  - id: 24
+    display_pl: "Odbiór karty pobytu"
+    display_ru: "Получение карты побыту"
+  - id: 118
+    display_pl: "Odbiór karty pobytu — wieczorami"
+    display_ru: "Получение карты побыту — вечерами"
+  - id: 119
+    display_pl: "Wymiana karty pobytu"
+    display_ru: "Обмен карты побыту"
+  - id: 112
+    display_pl: "Odbiór karty (rezerwacja online)"
+    display_ru: "Получение карты (онлайн-запись)"
+  - id: 113
+    display_pl: "Odbiór karty pobytu — FAMI (rezerwacja online)"
+    display_ru: "Получение карты побыту — FAMI (онлайн-запись)"
+
+  # FAMI services
+  - id: 111
+    display_pl: "Punkt informacyjno-doradczy FAMI"
+    display_ru: "Информационно-консультационный пункт FAMI"
+  - id: 117
+    display_pl: "Tłumaczenia dokumentów FAMI"
+    display_ru: "Перевод документов FAMI"
+
+  # Other
+  - id: 25
+    display_pl: "Wgląd do akt"
+    display_ru: "Ознакомление с делом"
+  - id: 26
+    display_pl: "Pieczątki / stamps"
+    display_ru: "Печати / stamps"
+  - id: 115
+    display_pl: "Załączniki"
+    display_ru: "Приложения к делу"
+  - id: 120
+    display_pl: "Obywatelstwo i świadczenia"
+    display_ru: "Гражданство и пособия"
+  - id: 122
+    display_pl: "Reklamacje"
+    display_ru: "Рекламации"
+
+  # Airport
+  - id: 123
+    display_pl: "Lotnisko — paszport biometryczny (wniosek)"
+    display_ru: "Аэропорт — биометрический паспорт (подача)"
+  - id: 124
+    display_pl: "Lotnisko — paszport biometryczny (odbiór)"
+    display_ru: "Аэропорт — биометрический паспорт (получение)"
