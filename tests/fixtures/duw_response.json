@@ -1,0 +1,75 @@
+{
+  "result": {
+    "Wrocław": [
+      {
+        "id": 14,
+        "name": "złożenie wniosku o paszport obsługa Sala B",
+        "operations": [
+          {
+            "id": "12",
+            "name": "złożenie wniosku o paszport ",
+            "enabled": true
+          }
+        ],
+        "ticket_count": 11,
+        "tickets_served": 84,
+        "workplaces": 3,
+        "average_wait_time": 2958,
+        "average_service_time": 110,
+        "registered_tickets": 95,
+        "max_tickets": 150,
+        "ticket_value": "A084",
+        "active": true,
+        "location": "Wrocław",
+        "tickets_left": 55,
+        "enabled": true
+      },
+      {
+        "id": 15,
+        "name": "odbiór paszportu obsługa Sala B",
+        "operations": [
+          {
+            "id": "13",
+            "name": "odbiór paszportu ",
+            "enabled": true
+          }
+        ],
+        "ticket_count": 16,
+        "tickets_served": 88,
+        "workplaces": 2,
+        "average_wait_time": 958,
+        "average_service_time": 170,
+        "registered_tickets": 104,
+        "max_tickets": 170,
+        "ticket_value": "B088",
+        "active": true,
+        "location": "Wrocław",
+        "tickets_left": 66,
+        "enabled": true
+      },
+      {
+        "id": 99,
+        "name": "WR paszporty wniosek internet ",
+        "operations": [
+          {
+            "id": "88",
+            "name": "WR paszporty wniosek internet",
+            "enabled": true
+          }
+        ],
+        "ticket_count": 6,
+        "tickets_served": 67,
+        "workplaces": 2,
+        "average_wait_time": 1824,
+        "average_service_time": 544,
+        "registered_tickets": 75,
+        "max_tickets": null,
+        "ticket_value": "S068",
+        "active": true,
+        "location": "Wrocław",
+        "tickets_left": -75,
+        "enabled": true
+      }
+    ]
+  }
+}
