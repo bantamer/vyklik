@@ -29,10 +29,25 @@ services:
       timeout: 5s
       retries: 5
 
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["alembic", "upgrade", "head"]
+
   poller:
     <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     command: ["python", "-m", "vyklik.poller"]
 
   bot:
     <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     command: ["python", "-m", "vyklik.bot"]

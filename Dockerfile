@@ -13,11 +13,12 @@ RUN apt-get update -qq \
 
 WORKDIR /app
 
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
 RUN pip install --upgrade pip \
  && pip install .
 
-COPY src/ ./src/
-RUN pip install -e .
+COPY migrations/ ./migrations/
+COPY alembic.ini ./
 
 CMD ["python", "-c", "print('vyklik image — set a command in compose')"]
