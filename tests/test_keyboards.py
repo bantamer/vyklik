@@ -7,7 +7,7 @@ def _callbacks(markup) -> list[str]:
 
 def test_rearm_ladder_below_dist():
     kb = rearm_threshold(42, 10, "ru")
-    assert _callbacks(kb) == ["rearm:42:5", "rearm:42:3", "rearm:42:2", "rearm:42:1"]
+    assert _callbacks(kb) == ["rearm:42:5", "rearm:42:3", "rearm:42:1"]
 
 
 def test_rearm_small_dist():

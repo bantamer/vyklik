@@ -7,17 +7,26 @@ from vyklik.stats.eta import SLOW_FACTOR, estimate_eta
 from vyklik.work_hours import TZ
 
 
-def fmt_seconds(seconds: int | None) -> str:
+def fmt_seconds(seconds: int | None, lang: str) -> str:
     if seconds is None:
         return "—"
     s = int(seconds)
     if s < 60:
-        return f"{s} s"
+        return f"{s} {t('dur_s', lang=lang)}"
     m, _ = divmod(s, 60)
     if m < 60:
-        return f"{m} min"
+        return f"{m} {t('dur_min', lang=lang)}"
     h, m = divmod(m, 60)
-    return f"{h} h {m} min" if m else f"{h} h"
+    if m:
+        return f"{h} {t('dur_h', lang=lang)} {m} {t('dur_min', lang=lang)}"
+    return f"{h} {t('dur_h', lang=lang)}"
+
+
+def fmt_range(low_seconds: int, high_seconds: int, lang: str) -> str:
+    """A compact duration range with a single unit, e.g. "5–9 мин"."""
+    if high_seconds < 3600:
+        return f"{low_seconds // 60}–{high_seconds // 60} {t('dur_min', lang=lang)}"
+    return f"{fmt_seconds(low_seconds, lang)} – {fmt_seconds(high_seconds, lang)}"
 
 
 def queue_card_text(queue: Queue, snap: Snapshot | None, lang: str) -> str:
@@ -35,8 +44,8 @@ def queue_card_text(queue: Queue, snap: Snapshot | None, lang: str) -> str:
         max_t=snap.max_tickets if snap.max_tickets is not None else "∞",
         ticket_count=snap.ticket_count,
         tickets_left=snap.tickets_left if snap.tickets_left is not None else "—",
-        wait=fmt_seconds(snap.avg_wait_api),
-        service=fmt_seconds(snap.avg_service_api),
+        wait=fmt_seconds(snap.avg_wait_api, lang),
+        service=fmt_seconds(snap.avg_service_api, lang),
     )
     return text + "\n" + t("card_updated", lang=lang, time=snap.ts.astimezone(TZ).strftime("%H:%M"))
 
@@ -78,8 +87,7 @@ def eta_text(
         "eta_line",
         lang=lang,
         ahead=ahead,
-        low=fmt_seconds(est.low_seconds),
-        high=fmt_seconds(est.high_seconds),
+        range=fmt_range(est.low_seconds, est.high_seconds, lang),
         at_low=est.eta_at_low.strftime("%H:%M"),
         at_high=est.eta_at_high.strftime("%H:%M"),
     )
@@ -107,7 +115,7 @@ def dashboard_text(
             elif ahead <= 0:
                 line += t("dashboard_mine_called", lang=lang, my=my_ticket)
             elif pace:
-                eta = fmt_seconds(round(ahead * pace * SLOW_FACTOR))
+                eta = fmt_seconds(round(ahead * pace * SLOW_FACTOR), lang)
                 line += t("dashboard_mine_eta", lang=lang, my=my_ticket, n=ahead, eta=eta)
             else:
                 line += t("dashboard_mine", lang=lang, my=my_ticket, n=ahead)
@@ -135,8 +143,7 @@ def eta_suffix(
     line = t(
         "alert_eta",
         lang=lang,
-        low=fmt_seconds(est.low_seconds),
-        high=fmt_seconds(est.high_seconds),
+        range=fmt_range(est.low_seconds, est.high_seconds, lang),
         at_low=est.eta_at_low.strftime("%H:%M"),
         at_high=est.eta_at_high.strftime("%H:%M"),
     )

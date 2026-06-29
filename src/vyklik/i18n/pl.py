@@ -54,17 +54,14 @@ TR = {
     "dow_3": "Śr",
     "dow_4": "Cz",
     "dow_5": "Pt",
-    "heatmap_title": "📊 <b>{name}</b>\nKiedy krótsza kolejka (godziny 8→15):",
-    "heatmap_legend": "🟩 spokojnie · 🟨 średnio · 🟥 dużo · ⬜ brak danych",
+    "heatmap_title": "📊 <b>{name}</b>\nCzas oczekiwania wg dni i godzin:",
+    "heatmap_legend": "🟩 krótko · 🟨 średnio · 🟥 długo · ⬜ brak danych",
     "heatmap_advice": (
-        "💡 Najspokojniej: {quiet_day} {quiet_h} (~{quiet_w}). "
-        "Najwięcej: {busy_day} {busy_h} (~{busy_w})."
+        "💡 Najkrócej: {quiet_day} {quiet_h} (~{quiet_w}). "
+        "Najdłużej: {busy_day} {busy_h} (~{busy_w})."
     ),
     "heatmap_no_data": "📊 <b>{name}</b>\nZa mało danych na statystyki.",
-    "eta_line": (
-        "⏱ Przed Tobą: <b>{ahead}</b>\n"
-        "Wywołanie nastąpi mniej więcej za {low}–{high} (≈ {at_low}–{at_high})"
-    ),
+    "eta_line": ("⏱ Przed Tobą: <b>{ahead}</b>\nJeszcze ~{range} czekania (≈ {at_low}–{at_high})"),
     "eta_called": "🎯 Już Cię wywołano lub jesteś następny.",
     "eta_no_pace": (
         "⏱ Przed Tobą: <b>{ahead}</b>. Tempa na razie nie da się ocenić — "
@@ -81,9 +78,12 @@ TR = {
     "btn_toggle_open": "📢 Powiadomienie o otwarciu: {state}",
     "btn_toggle_slots": "🪑 Powiadomienie o nowych miejscach: {state}",
     "btn_toggle_every": "🔔 Każde wywołanie: {state}",
-    "btn_rearm": "🔔 przy {n}",
+    "btn_rearm": "🔔 Przypomnij przy {n}",
     "on": "wł.",
     "off": "wył.",
+    "dur_h": "godz",
+    "dur_min": "min",
+    "dur_s": "s",
     "dashboard_header": "📌 <b>Moje kolejki</b> · aktualizacja {time}",
     "dashboard_line_closed": "🔴 {name} — zamknięta",
     "dashboard_line_open": "🟢 {name}: <b>{ticket}</b>",
@@ -120,7 +120,7 @@ TR = {
         "⏳ <b>{name}</b>\nDo Twojego numerka <b>{my}</b> zostało {n}. "
         "Przed chwilą wywołano: <b>{current}</b>."
     ),
-    "alert_eta": "⏱ Mniej więcej za {low}–{high} (≈ {at_low}–{at_high}).",
+    "alert_eta": "⏱ Jeszcze ~{range} czekania (≈ {at_low}–{at_high}).",
     "alert_every": (
         "🔔 <b>{name}</b>\nWywołano <b>{current}</b> · do Twojego <b>{my}</b> zostało {n}."
     ),
