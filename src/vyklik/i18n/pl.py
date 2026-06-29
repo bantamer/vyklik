@@ -24,6 +24,13 @@ TR = {
     "feedback_unavailable": "Opinie są teraz niedostępne.",
     "feedback_error": "Nie udało się wysłać, spróbuj później.",
     "choose_language": "Wybierz język:",
+    "cmd_queues": "Lista kolejek",
+    "cmd_mysubs": "Twoje subskrypcje",
+    "cmd_dashboard": "Przypięty status",
+    "cmd_stats": "Kiedy najlepiej przyjść",
+    "cmd_feedback": "Napisz do autora",
+    "cmd_lang": "Zmień język",
+    "cmd_help": "Pomoc",
     "language_set": "Język ustawiony: polski.",
     # Queue card
     "status_open": "🟢 otwarta",
