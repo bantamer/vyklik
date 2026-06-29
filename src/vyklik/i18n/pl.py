@@ -9,9 +9,20 @@ TR = {
         "Komendy:\n"
         "/queues — lista kolejek\n"
         "/mysubs — twoje subskrypcje\n"
+        "/dashboard — przypięty status\n"
+        "/stats — kiedy najlepiej przyjść\n"
+        "/feedback — napisz do autora\n"
         "/lang — zmień język\n"
         "/help — ta wiadomość"
     ),
+    "feedback_prompt": (
+        "Napisz wiadomość — przekażę ją autorowi bota (twojego czatu nie zobaczy). "
+        "Albo /cancel, aby anulować."
+    ),
+    "feedback_sent": "Dzięki! Wiadomość wysłana. 🙏",
+    "feedback_cancel": "OK, anulowano.",
+    "feedback_unavailable": "Opinie są teraz niedostępne.",
+    "feedback_error": "Nie udało się wysłać, spróbuj później.",
     "choose_language": "Wybierz język:",
     "language_set": "Język ustawiony: polski.",
     # Queue card

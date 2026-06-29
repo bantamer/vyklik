@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from vyklik.bot.handlers import dashboard, lang, mysubs, queues, start, stats
+from vyklik.bot.handlers import dashboard, feedback, lang, mysubs, queues, start, stats
 
 
 def all_routers() -> list[Router]:
@@ -13,4 +13,5 @@ def all_routers() -> list[Router]:
         mysubs.router,
         dashboard.router,
         stats.router,
+        feedback.router,
     ]

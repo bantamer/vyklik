@@ -81,4 +81,11 @@ new threshold through the whole FSM; and anxious users want every update.
   people-ahead + ETA, deduped per called value. Takes precedence over the single
   threshold alert when on.
 
-## 4. _Further features — to be added._
+## 4. /feedback — message the author — shipped
+
+`/feedback` starts a short FSM: the user types a message, the bot delivers it to
+`FEEDBACK_CHAT_ID` (config, server-side) so the owner's Telegram is never exposed.
+The owner sees the sender's name/username/id + language for follow-up; any command
+(incl. `/cancel`) aborts the flow. Empty `FEEDBACK_CHAT_ID` disables the command.
+
+## 5. _Further features — to be added._
