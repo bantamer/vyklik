@@ -42,7 +42,7 @@ def test_dashboard_already_called():
 def test_dashboard_different_series():
     rows = [("Q", _snap(ticket_value="K010"), "A020", 60.0)]
     out = dashboard_text(rows, "ru", NOON)
-    assert "твой A020" in out
+    assert "ваш A020" in out
     assert "впереди" not in out
 
 

@@ -26,7 +26,7 @@ def test_colours_and_advice():
     assert "🟩" in out and "🟨" in out and "🟥" in out
     assert "⬜" in out  # most of the grid has no data
     assert "Тише всего: Пн 08:00 (~10 min)" in out
-    assert "Хуже всего: Пн 09:00 (~3 h 20 min)" in out
+    assert "Больше всего: Пн 09:00 (~3 h 20 min)" in out
 
 
 def test_grid_has_all_weekday_rows():
