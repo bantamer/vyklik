@@ -45,6 +45,8 @@ TR = {
     "card_updated": "🕒 данные на {time}",
     "btn_toggle_open": "📢 Алерт об открытии: {state}",
     "btn_toggle_slots": "🪑 Алерт о новых местах: {state}",
+    "btn_toggle_every": "🔔 Каждый вызов: {state}",
+    "btn_rearm": "🔔 при {n}",
     "on": "вкл.",
     "off": "выкл.",
     "dashboard_header": "📌 <b>Мои очереди</b> · обновлено {time}",
@@ -78,6 +80,8 @@ TR = {
         "Только что вызвали: <b>{current}</b>."
     ),
     "alert_eta": "⏱ Примерно через {low}–{high} (≈ {at_low}–{at_high}).",
+    "alert_every": "🔔 <b>{name}</b>\nВызвали <b>{current}</b> · до твоего <b>{my}</b> осталось {n}.",
+    "rearm_set": "Напомню, когда останется ≤ {n}.",
     "alert_opened": "📢 <b>{name}</b>\nЗапись только что открылась!",
     "alert_slots": ("🪑 <b>{name}</b>\nПоявилось {n} свободных мест — успевай записаться!"),
 }

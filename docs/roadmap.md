@@ -66,4 +66,19 @@ on every change event (most live) vs a lighter periodic edit.
 
 **Effort:** medium — one migration, a render fn, a command, and a notifier hook.
 
-## 3. _Further features — to be added._
+## 3. Threshold alert quality-of-life — shipped
+
+**Pain:** re-arming the "N tickets left" alert meant re-entering the ticket and a
+new threshold through the whole FSM; and anxious users want every update.
+
+**Shipped:**
+- **One-tap re-arm** — the threshold alert carries inline buttons (`🔔 5 / 3 / 2 / 1`,
+  only values below the current distance) that set a tighter `alert_n_before` in
+  one tap, no ticket re-entry. `keyboards.rearm_threshold` + `cb_rearm`. No schema
+  change (event_key includes the threshold, so a new value re-fires).
+- **Anxious mode** — `subscriptions.alert_every_call` (+ migration) with a
+  `🔔 Every call` toggle on the card; pings on every newly called number with
+  people-ahead + ETA, deduped per called value. Takes precedence over the single
+  threshold alert when on.
+
+## 4. _Further features — to be added._

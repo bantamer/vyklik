@@ -86,6 +86,8 @@ class Subscription(Base):
     alert_n_before: Mapped[int | None] = mapped_column(Integer)
     alert_on_open: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     alert_on_slots: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # "Anxious mode": ping on every called number, not just at a threshold.
+    alert_every_call: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

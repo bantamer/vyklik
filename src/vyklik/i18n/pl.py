@@ -47,6 +47,8 @@ TR = {
     "card_updated": "🕒 dane z {time}",
     "btn_toggle_open": "📢 Powiadom, gdy się otworzy: {state}",
     "btn_toggle_slots": "🪑 Powiadom o nowych miejscach: {state}",
+    "btn_toggle_every": "🔔 Każde wywołanie: {state}",
+    "btn_rearm": "🔔 przy {n}",
     "on": "wł.",
     "off": "wył.",
     # Subscriptions
@@ -83,6 +85,8 @@ TR = {
         "Wywołany właśnie: <b>{current}</b>."
     ),
     "alert_eta": "⏱ Mniej więcej za {low}–{high} (≈ {at_low}–{at_high}).",
+    "alert_every": "🔔 <b>{name}</b>\nWywołano <b>{current}</b> · do twojego <b>{my}</b> zostało {n}.",
+    "rearm_set": "Powiadomię, gdy zostanie ≤ {n}.",
     "alert_opened": "📢 <b>{name}</b>\nRejestracja właśnie się otworzyła!",
     "alert_slots": ("🪑 <b>{name}</b>\nPojawiło się {n} wolnych miejsc — biegnij się zapisać!"),
 }

@@ -57,6 +57,20 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                     )
                 ]
             )
+            rows.append(
+                [
+                    InlineKeyboardButton(
+                        text=t(
+                            "btn_toggle_every",
+                            lang=lang,
+                            state=t("on", lang=lang)
+                            if sub.alert_every_call
+                            else t("off", lang=lang),
+                        ),
+                        callback_data=f"toggle_every:{sub.id}",
+                    )
+                ]
+            )
         else:
             rows.append(
                 [
@@ -97,6 +111,25 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
         ]
     )
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+# Tighter thresholds offered as one-tap re-arm buttons on a "N tickets left" alert.
+_REARM_LADDER = [5, 3, 2, 1]
+
+
+def rearm_threshold(sub_id: int, dist: int, lang: str) -> InlineKeyboardMarkup | None:
+    """Buttons to re-arm the threshold alert at a tighter value, in one tap.
+
+    Offers only values strictly below the current distance (a value ≥ dist would
+    fire again immediately). Returns None when there's nothing tighter to offer."""
+    values = [n for n in _REARM_LADDER if n < dist]
+    if not values:
+        return None
+    row = [
+        InlineKeyboardButton(text=t("btn_rearm", lang=lang, n=n), callback_data=f"rearm:{sub_id}:{n}")
+        for n in values
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=[row])
 
 
 def mysubs_list(items: list[tuple[Subscription, Queue]], lang: str) -> InlineKeyboardMarkup:

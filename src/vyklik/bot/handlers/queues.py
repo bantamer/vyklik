@@ -164,6 +164,27 @@ async def cb_toggle_slots(cb: CallbackQuery) -> None:
     await _toggle_field(cb, "alert_on_slots")
 
 
+@router.callback_query(F.data.startswith("toggle_every:"))
+async def cb_toggle_every(cb: CallbackQuery) -> None:
+    await _toggle_field(cb, "alert_every_call")
+
+
+@router.callback_query(F.data.startswith("rearm:"))
+async def cb_rearm(cb: CallbackQuery) -> None:
+    """One-tap re-arm of the threshold alert from a button on the alert itself."""
+    if cb.from_user is None or cb.data is None:
+        return
+    _, sub_id_s, n_s = cb.data.split(":")
+    sub_id, n = int(sub_id_s), int(n_s)
+    async with session() as s:
+        sub = await repo.get_subscription_by_id(s, sub_id)
+        if sub is not None:
+            sub.alert_n_before = n
+        lang = await _user_lang(s, cb.from_user.id)
+        await s.commit()
+    await cb.answer(t("rearm_set", lang=lang, n=n))
+
+
 async def _toggle_field(cb: CallbackQuery, field: str) -> None:
     if cb.from_user is None or cb.data is None:
         return

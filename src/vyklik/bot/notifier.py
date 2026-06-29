@@ -6,8 +6,9 @@ from datetime import UTC, datetime
 import asyncpg
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter
+from aiogram.types import InlineKeyboardMarkup
 
-from vyklik.bot import repo, tickets
+from vyklik.bot import keyboards, repo, tickets
 from vyklik.bot.format import eta_suffix
 from vyklik.bot.handlers.dashboard import update_dashboards_for_queue
 from vyklik.config import settings
@@ -134,6 +135,24 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
                         sub_db.my_ticket = None
                         sub_db.alert_n_before = None
                     await s.commit()
+        elif sub.alert_every_call and dist > 0:
+            event_key = f"every:{current_ticket}"
+            async with session() as s:
+                inserted = await repo.record_sent(s, sub.id, event_key)
+                await s.commit()
+            if inserted:
+                text = t(
+                    "alert_every",
+                    lang=lang,
+                    name=name,
+                    current=current_ticket,
+                    my=sub.my_ticket,
+                    n=dist,
+                )
+                suffix = eta_suffix(dist, pace, lang, datetime.now(UTC), _SCHEDULE)
+                if suffix:
+                    text += "\n" + suffix
+                await _send(bot, sub.user_id, text)
         elif sub.alert_n_before is not None and 0 < dist <= sub.alert_n_before:
             event_key = f"before:{sub.my_ticket}:{sub.alert_n_before}"
             async with session() as s:
@@ -151,7 +170,7 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
                 suffix = eta_suffix(dist, pace, lang, datetime.now(UTC), _SCHEDULE)
                 if suffix:
                     text += "\n" + suffix
-                await _send(bot, sub.user_id, text)
+                await _send(bot, sub.user_id, text, keyboards.rearm_threshold(sub.id, dist, lang))
 
 
 async def _fanout_flag(
@@ -184,9 +203,11 @@ async def _fanout_flag(
         await _send(bot, sub.user_id, text)
 
 
-async def _send(bot: Bot, chat_id: int, text: str) -> None:
+async def _send(
+    bot: Bot, chat_id: int, text: str, reply_markup: InlineKeyboardMarkup | None = None
+) -> None:
     try:
-        await bot.send_message(chat_id, text)
+        await bot.send_message(chat_id, text, reply_markup=reply_markup)
     except TelegramForbiddenError:
         async with session() as s:
             await repo.mark_blocked(s, chat_id)
@@ -196,7 +217,7 @@ async def _send(bot: Bot, chat_id: int, text: str) -> None:
         log.warning("telegram rate-limit, sleeping %ss", exc.retry_after)
         await asyncio.sleep(exc.retry_after)
         try:
-            await bot.send_message(chat_id, text)
+            await bot.send_message(chat_id, text, reply_markup=reply_markup)
         except Exception:
             log.exception("retry after rate-limit also failed for chat %s", chat_id)
     except asyncpg.exceptions.PostgresError:
