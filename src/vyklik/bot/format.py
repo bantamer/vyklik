@@ -3,7 +3,7 @@ from datetime import datetime
 from vyklik.bot import tickets
 from vyklik.i18n import t
 from vyklik.models import Queue, Snapshot
-from vyklik.stats.eta import estimate_eta
+from vyklik.stats.eta import SLOW_FACTOR, estimate_eta
 from vyklik.work_hours import TZ
 
 
@@ -25,7 +25,7 @@ def queue_card_text(queue: Queue, snap: Snapshot | None, lang: str) -> str:
     if snap is None:
         return f"<b>{name}</b>\n\n{t('queue_no_data', lang=lang)}"
     status = t("status_open", lang=lang) if snap.enabled else t("status_closed", lang=lang)
-    return t(
+    text = t(
         "queue_card",
         lang=lang,
         name=name,
@@ -38,6 +38,7 @@ def queue_card_text(queue: Queue, snap: Snapshot | None, lang: str) -> str:
         wait=fmt_seconds(snap.avg_wait_api),
         service=fmt_seconds(snap.avg_service_api),
     )
+    return text + "\n" + t("card_updated", lang=lang, time=snap.ts.astimezone(TZ).strftime("%H:%M"))
 
 
 def _closing_today(now_local: datetime, schedule: dict[int, tuple[int, int]]) -> datetime | None:
@@ -85,6 +86,33 @@ def eta_text(
     if est.today_unlikely:
         line += "\n" + t("eta_today_unlikely", lang=lang)
     return line
+
+
+def dashboard_text(
+    rows: list[tuple[str, Snapshot | None, str | None, float | None]],
+    lang: str,
+    now_local: datetime,
+) -> str:
+    """One-line-per-subscription status board. Rows are (name, snap, my_ticket, pace)."""
+    lines = [t("dashboard_header", lang=lang, time=now_local.strftime("%H:%M"))]
+    for name, snap, my_ticket, pace in rows:
+        if snap is None or not snap.enabled:
+            lines.append(t("dashboard_line_closed", lang=lang, name=name))
+            continue
+        line = t("dashboard_line_open", lang=lang, name=name, ticket=snap.ticket_value or "—")
+        if my_ticket:
+            ahead = tickets.distance(my_ticket, snap.ticket_value)
+            if ahead is None:
+                line += t("dashboard_mine_plain", lang=lang, my=my_ticket)
+            elif ahead <= 0:
+                line += t("dashboard_mine_called", lang=lang, my=my_ticket)
+            elif pace:
+                eta = fmt_seconds(round(ahead * pace * SLOW_FACTOR))
+                line += t("dashboard_mine_eta", lang=lang, my=my_ticket, n=ahead, eta=eta)
+            else:
+                line += t("dashboard_mine", lang=lang, my=my_ticket, n=ahead)
+        lines.append(line)
+    return "\n".join(lines)
 
 
 def eta_suffix(

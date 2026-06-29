@@ -9,6 +9,7 @@ from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter
 
 from vyklik.bot import repo, tickets
 from vyklik.bot.format import eta_suffix
+from vyklik.bot.handlers.dashboard import update_dashboards_for_queue
 from vyklik.config import settings
 from vyklik.db import asyncpg_connect, session
 from vyklik.i18n import t
@@ -84,6 +85,9 @@ async def _handle(bot: Bot, event: dict) -> None:
             key=f"slots:{payload.get('date')}",
             extra={"n": payload.get("tickets_left")},
         )
+
+    # Keep pinned dashboards live for anyone watching this queue.
+    await update_dashboards_for_queue(bot, qid)
 
 
 async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:

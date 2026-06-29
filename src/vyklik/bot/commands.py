@@ -4,6 +4,7 @@ from aiogram.types import BotCommand, BotCommandScopeDefault
 COMMANDS = [
     BotCommand(command="queues", description="List queues / Список очередей"),
     BotCommand(command="mysubs", description="My subscriptions / Мои подписки"),
+    BotCommand(command="dashboard", description="Pinned status board / Закреплённый статус"),
     BotCommand(command="lang", description="Change language / Сменить язык"),
     BotCommand(command="help", description="Help / Помощь"),
 ]

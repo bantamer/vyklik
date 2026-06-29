@@ -24,6 +24,10 @@ async def get_or_create_user(session: AsyncSession, tg_id: int, lang_hint: str =
     return user
 
 
+async def get_user(session: AsyncSession, tg_id: int) -> User | None:
+    return await session.get(User, tg_id)
+
+
 async def set_user_language(session: AsyncSession, tg_id: int, lang: str) -> None:
     user = await session.get(User, tg_id)
     if user is not None:
@@ -34,6 +38,34 @@ async def mark_blocked(session: AsyncSession, tg_id: int) -> None:
     user = await session.get(User, tg_id)
     if user is not None:
         user.blocked = True
+
+
+async def set_dashboard_message(session: AsyncSession, tg_id: int, message_id: int) -> None:
+    user = await session.get(User, tg_id)
+    if user is not None:
+        user.dashboard_message_id = message_id
+
+
+async def clear_dashboard_message(session: AsyncSession, tg_id: int) -> None:
+    user = await session.get(User, tg_id)
+    if user is not None:
+        user.dashboard_message_id = None
+
+
+async def users_with_dashboard_subscribed_to(session: AsyncSession, queue_id: int) -> list[int]:
+    """Telegram ids of non-blocked users with a pinned dashboard who subscribe to a queue."""
+    stmt = (
+        select(User.telegram_id)
+        .join(Subscription, Subscription.user_id == User.telegram_id)
+        .where(
+            Subscription.queue_id == queue_id,
+            User.dashboard_message_id.isnot(None),
+            User.blocked.is_(False),
+        )
+        .distinct()
+    )
+    result = await session.execute(stmt)
+    return [row[0] for row in result.all()]
 
 
 async def list_queues(session: AsyncSession) -> list[Queue]:

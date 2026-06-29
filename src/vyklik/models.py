@@ -61,6 +61,9 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     blocked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # Telegram message id of the user's pinned live dashboard (private chat, so
+    # chat_id == telegram_id). NULL until they run /dashboard.
+    dashboard_message_id: Mapped[int | None] = mapped_column(BigInteger)
 
     subscriptions: Mapped[list["Subscription"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"

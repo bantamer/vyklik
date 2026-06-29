@@ -90,7 +90,12 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                 )
             ]
         )
-    rows.append([InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues")])
+    rows.append(
+        [
+            InlineKeyboardButton(text=t("btn_refresh", lang=lang), callback_data=f"q:{queue.id}"),
+            InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues"),
+        ]
+    )
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 

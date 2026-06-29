@@ -3,7 +3,10 @@
 Requested product features, with implementation sketches. Stats/wait-time work
 lives in [stats.md](stats.md).
 
-## 1. Refresh button on the queue card (quick win)
+> **Status:** features 1 and 2 are **shipped** (the sketches below describe what
+> was built). Section 3 is open.
+
+## 1. Refresh button on the queue card (quick win) — shipped
 
 **Pain:** getting fresh info means re-running `/mysubs` (or going back + re-tapping),
 which posts a brand-new message each time instead of updating in place.
@@ -17,7 +20,7 @@ which posts a brand-new message each time instead of updating in place.
 
 **Effort:** tiny. No schema change.
 
-## 2. Pinned live dashboard of all subscriptions
+## 2. Pinned live dashboard of all subscriptions — shipped
 
 **Pain:** to see the status of every queue at a glance you have to open each card.
 

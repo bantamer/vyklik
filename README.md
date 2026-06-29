@@ -12,6 +12,10 @@ called"** estimate. It's computed from the queue's *current* serving pace (how f
 `average_wait_time` — which is a backward-looking average that lags and under-reports
 while the queue grows.
 
+`/dashboard` pins a single message that lists every subscription's status at a
+glance and updates itself in place as queues change. Each queue card also has a
+🔄 refresh button.
+
 > **Status:** scaffolding. Not deployed yet. See [open issues](https://github.com/bantamer/vyklik/issues) for the roadmap.
 
 ## How it works

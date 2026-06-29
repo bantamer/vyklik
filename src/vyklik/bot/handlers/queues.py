@@ -2,6 +2,7 @@ import logging
 from datetime import UTC, datetime
 
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -45,6 +46,20 @@ def _render_card(queue, snap, sub, samples, lang: str):
         if section:
             text += "\n\n" + section
     return text, keyboards.queue_card(queue, sub, lang)
+
+
+async def _show_card(cb: CallbackQuery, text: str, kb) -> None:
+    """Edit the card in place; tolerate an unchanged refresh; fall back to a new
+    message only on a real edit failure (e.g. the original was deleted).
+
+    Does not answer the callback — the caller decides (some paths already did)."""
+    if cb.message is None:
+        return
+    try:
+        await cb.message.edit_text(text, reply_markup=kb)
+    except TelegramBadRequest as exc:
+        if "not modified" not in str(exc).lower():
+            await cb.message.answer(text, reply_markup=kb)
 
 
 async def _send_queue_list(target: Message | CallbackQuery, lang: str) -> None:
@@ -103,11 +118,7 @@ async def cb_queue_card(cb: CallbackQuery) -> None:
         snap, sub, samples = await _card_data(s, qid, cb.from_user.id)
         await s.commit()
     text, kb = _render_card(queue, snap, sub, samples, lang)
-    if cb.message is not None:
-        try:
-            await cb.message.edit_text(text, reply_markup=kb)
-        except Exception:
-            await cb.message.answer(text, reply_markup=kb)
+    await _show_card(cb, text, kb)
     await cb.answer()
 
 
@@ -270,8 +281,4 @@ async def _refresh_queue_card(cb: CallbackQuery, qid: int) -> None:
         snap, sub, samples = await _card_data(s, qid, cb.from_user.id)
         await s.commit()
     text, kb = _render_card(queue, snap, sub, samples, lang)
-    if cb.message is not None:
-        try:
-            await cb.message.edit_text(text, reply_markup=kb)
-        except Exception:
-            await cb.message.answer(text, reply_markup=kb)
+    await _show_card(cb, text, kb)
