@@ -103,6 +103,10 @@ TR = {
     "ticket_invalid": (
         "Numerek powinien mieć format litera + cyfry (np. G045). Proszę spróbować ponownie."
     ),
+    "ticket_wrong_series": (
+        "Ta kolejka wydaje numerki serii «{prefix}», a podano {ticket}. "
+        "To chyba numerek z innej kolejki — proszę sprawdzić."
+    ),
     "ticket_set": "Numerek zapisany: <b>{ticket}</b>.",
     "ticket_cleared": "Numerek usunięty.",
     "threshold_prompt": (

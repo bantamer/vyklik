@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -94,6 +94,26 @@ async def recent_snapshots(
     )
     result = await session.execute(stmt)
     return [(ts, served) for ts, served in result.all()]
+
+
+async def queue_ticket_prefix(session: AsyncSession, queue_id: int) -> str | None:
+    """The queue's ticket series letter, from its most recent non-empty ticket.
+
+    DUW queues each use a single stable letter (verified over history); None when
+    the queue has never shown a ticket, so we can't validate."""
+    stmt = (
+        select(func.left(Snapshot.ticket_value, 1))
+        .where(
+            Snapshot.queue_id == queue_id,
+            Snapshot.ticket_value.isnot(None),
+            Snapshot.ticket_value != "",
+        )
+        .order_by(Snapshot.ts.desc())
+        .limit(1)
+    )
+    result = await session.execute(stmt)
+    prefix = result.scalar_one_or_none()
+    return prefix.upper() if prefix else None
 
 
 async def get_subscription(

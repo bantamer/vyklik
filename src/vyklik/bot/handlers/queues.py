@@ -250,6 +250,11 @@ async def on_ticket_value(message: Message, state: FSMContext) -> None:
     sub_id = data.get("sub_id")
     async with session() as s:
         sub = await repo.get_subscription_by_id(s, sub_id) if sub_id else None
+        expected = await repo.queue_ticket_prefix(s, sub.queue_id) if sub is not None else None
+        if tickets.wrong_series(value, expected):
+            await s.commit()
+            await message.answer(t("ticket_wrong_series", lang=lang, prefix=expected, ticket=value))
+            return  # stay in waiting_for_value so they can re-enter
         if sub is not None:
             sub.my_ticket = value
         await s.commit()
