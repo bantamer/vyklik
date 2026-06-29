@@ -267,7 +267,7 @@ async def on_threshold(message: Message, state: FSMContext) -> None:
         await s.commit()
     text = message.text.strip().lower()
     n: int | None
-    if text in {"nie", "нет", "off", "no", "0"}:
+    if text in {"nie", "нет", "не", "off", "no", "0"}:
         n = None
     else:
         try:

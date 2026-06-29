@@ -33,7 +33,7 @@ async def set_my_commands(bot: Bot) -> None:
         [BotCommand(command=c, description=_DEFAULT_DESC[c]) for c, _ in _COMMANDS],
         scope=BotCommandScopeDefault(),
     )
-    for code in ("pl", "ru"):
+    for code in ("pl", "ru", "be"):
         await bot.set_my_commands(
             [BotCommand(command=c, description=t(key, lang=code)) for c, key in _COMMANDS],
             scope=BotCommandScopeDefault(),

@@ -8,8 +8,9 @@ def language_picker() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🇵🇱 Polski", callback_data="lang:pl"),
-                InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
+                InlineKeyboardButton(text="Polski", callback_data="lang:pl"),
+                InlineKeyboardButton(text="Русский", callback_data="lang:ru"),
+                InlineKeyboardButton(text="Беларуская", callback_data="lang:be"),
             ]
         ]
     )
