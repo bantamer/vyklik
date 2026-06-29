@@ -23,12 +23,14 @@ class HourStatLike(Protocol):
     samples: int
 
 
-def _fmt_minutes(minutes: float) -> str:
+def _fmt_minutes(minutes: float, lang: str) -> str:
     m = int(round(minutes))
     if m < 60:
-        return f"{m} min"
+        return f"{m} {t('dur_min', lang=lang)}"
     h, rem = divmod(m, 60)
-    return f"{h} h {rem} min" if rem else f"{h} h"
+    if rem:
+        return f"{h} {t('dur_h', lang=lang)} {rem} {t('dur_min', lang=lang)}"
+    return f"{h} {t('dur_h', lang=lang)}"
 
 
 def _colour(value: float, lo: float, hi: float) -> str:
@@ -58,7 +60,10 @@ def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
     waits = [r.est_wait_min for r in usable]
     lo, hi = min(waits), max(waits)
 
-    lines = [t("heatmap_title", lang=lang, name=name)]
+    # Grid goes in a <pre> block so the weekday labels are monospace and the
+    # columns line up; the hour header (08..15) sits above, cells spaced to
+    # match its two-digit width.
+    grid = ["   " + " ".join(f"{h:02d}" for h in HOURS)]
     for dow in DOWS:
         cells = []
         for hour in HOURS:
@@ -67,21 +72,28 @@ def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
                 cells.append("⬜")
             else:
                 cells.append(_colour(r.est_wait_min, lo, hi))
-        lines.append(t(f"dow_{dow}", lang=lang) + " " + "".join(cells))
-    lines.append(t("heatmap_legend", lang=lang))
+        grid.append(f"{t(f'dow_{dow}', lang=lang)} " + " ".join(cells))
+    block = "<pre>" + "\n".join(grid) + "</pre>"
 
     quiet = min(usable, key=lambda r: r.est_wait_min)
     busy = max(usable, key=lambda r: r.est_wait_min)
-    lines.append(
-        t(
-            "heatmap_advice",
-            lang=lang,
-            quiet_day=t(f"dow_{quiet.dow}", lang=lang),
-            quiet_h=f"{quiet.hour:02d}:00",
-            quiet_w=_fmt_minutes(quiet.est_wait_min),
-            busy_day=t(f"dow_{busy.dow}", lang=lang),
-            busy_h=f"{busy.hour:02d}:00",
-            busy_w=_fmt_minutes(busy.est_wait_min),
-        )
+    advice = t(
+        "heatmap_advice",
+        lang=lang,
+        quiet_day=t(f"dow_{quiet.dow}", lang=lang),
+        quiet_h=f"{quiet.hour:02d}:00",
+        quiet_w=_fmt_minutes(quiet.est_wait_min, lang),
+        busy_day=t(f"dow_{busy.dow}", lang=lang),
+        busy_h=f"{busy.hour:02d}:00",
+        busy_w=_fmt_minutes(busy.est_wait_min, lang),
     )
-    return "\n".join(lines)
+    return "\n".join(
+        [
+            t("heatmap_title", lang=lang, name=name),
+            block,
+            "",
+            t("heatmap_legend", lang=lang),
+            "",
+            advice,
+        ]
+    )

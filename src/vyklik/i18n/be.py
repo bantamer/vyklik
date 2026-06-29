@@ -54,16 +54,14 @@ TR = {
     "dow_3": "Ср",
     "dow_4": "Чц",
     "dow_5": "Пт",
-    "heatmap_title": "📊 <b>{name}</b>\nКалі меншая чарга (гадзіны 8→15):",
-    "heatmap_legend": "🟩 ціха · 🟨 сярэдне · 🟥 шмат · ⬜ няма даных",
+    "heatmap_title": "📊 <b>{name}</b>\nЧаканне па днях і гадзінах:",
+    "heatmap_legend": "🟩 мала чакаць · 🟨 сярэдне · 🟥 доўга · ⬜ няма даных",
     "heatmap_advice": (
-        "💡 Найцішэй: {quiet_day} {quiet_h} (~{quiet_w}). "
-        "Найбольш: {busy_day} {busy_h} (~{busy_w})."
+        "💡 Найменш чакаць: {quiet_day} {quiet_h} (~{quiet_w}). "
+        "Найдаўжэй: {busy_day} {busy_h} (~{busy_w})."
     ),
     "heatmap_no_data": "📊 <b>{name}</b>\nПакуль недастаткова даных для статыстыкі.",
-    "eta_line": (
-        "⏱ Перад вамі: <b>{ahead}</b>\nВыклічуць прыкладна праз {low}–{high} (≈ {at_low}–{at_high})"
-    ),
+    "eta_line": ("⏱ Перад вамі: <b>{ahead}</b>\nЧакаць яшчэ ~{range} (≈ {at_low}–{at_high})"),
     "eta_called": "🎯 Вас ужо выклікалі ці вы наступны.",
     "eta_no_pace": (
         "⏱ Перад вамі: <b>{ahead}</b>. Тэмп пакуль вызначыць не ўдаецца — "
@@ -80,9 +78,12 @@ TR = {
     "btn_toggle_open": "📢 Апавяшчэнне пра адкрыццё: {state}",
     "btn_toggle_slots": "🪑 Апавяшчэнне пра новыя месцы: {state}",
     "btn_toggle_every": "🔔 Кожны выклік: {state}",
-    "btn_rearm": "🔔 пры {n}",
+    "btn_rearm": "🔔 Нагадаць пры {n}",
     "on": "укл.",
     "off": "выкл.",
+    "dur_h": "гадз",
+    "dur_min": "мін",
+    "dur_s": "с",
     "dashboard_header": "📌 <b>Мае чэргі</b> · абноўлена {time}",
     "dashboard_line_closed": "🔴 {name} — зачынена",
     "dashboard_line_open": "🟢 {name}: <b>{ticket}</b>",
@@ -117,7 +118,7 @@ TR = {
         "⏳ <b>{name}</b>\nДа вашага талона <b>{my}</b> засталося {n}. "
         "Толькі што выклікалі: <b>{current}</b>."
     ),
-    "alert_eta": "⏱ Прыкладна праз {low}–{high} (≈ {at_low}–{at_high}).",
+    "alert_eta": "⏱ Чакаць яшчэ ~{range} (≈ {at_low}–{at_high}).",
     "alert_every": (
         "🔔 <b>{name}</b>\nВыклікалі <b>{current}</b> · да вашага <b>{my}</b> засталося {n}."
     ),

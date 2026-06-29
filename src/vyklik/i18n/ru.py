@@ -54,16 +54,14 @@ TR = {
     "dow_3": "Ср",
     "dow_4": "Чт",
     "dow_5": "Пт",
-    "heatmap_title": "📊 <b>{name}</b>\nКогда меньше очередь (часы 8→15):",
-    "heatmap_legend": "🟩 тихо · 🟨 средне · 🟥 много · ⬜ нет данных",
+    "heatmap_title": "📊 <b>{name}</b>\nОжидание по дням и часам:",
+    "heatmap_legend": "🟩 мало ждать · 🟨 средне · 🟥 долго · ⬜ нет данных",
     "heatmap_advice": (
-        "💡 Тише всего: {quiet_day} {quiet_h} (~{quiet_w}). "
-        "Больше всего: {busy_day} {busy_h} (~{busy_w})."
+        "💡 Меньше всего ждать: {quiet_day} {quiet_h} (~{quiet_w}). "
+        "Дольше всего: {busy_day} {busy_h} (~{busy_w})."
     ),
     "heatmap_no_data": "📊 <b>{name}</b>\nПока недостаточно данных для статистики.",
-    "eta_line": (
-        "⏱ Перед вами: <b>{ahead}</b>\nВызовут примерно через {low}–{high} (≈ {at_low}–{at_high})"
-    ),
+    "eta_line": ("⏱ Перед вами: <b>{ahead}</b>\nЖдать ещё ~{range} (≈ {at_low}–{at_high})"),
     "eta_called": "🎯 Вас уже вызвали или вы следующий.",
     "eta_no_pace": (
         "⏱ Перед вами: <b>{ahead}</b>. Темп пока определить не удаётся — "
@@ -80,9 +78,12 @@ TR = {
     "btn_toggle_open": "📢 Уведомление об открытии: {state}",
     "btn_toggle_slots": "🪑 Уведомление о новых местах: {state}",
     "btn_toggle_every": "🔔 Каждый вызов: {state}",
-    "btn_rearm": "🔔 при {n}",
+    "btn_rearm": "🔔 Напомнить при {n}",
     "on": "вкл.",
     "off": "выкл.",
+    "dur_h": "ч",
+    "dur_min": "мин",
+    "dur_s": "с",
     "dashboard_header": "📌 <b>Мои очереди</b> · обновлено {time}",
     "dashboard_line_closed": "🔴 {name} — закрыта",
     "dashboard_line_open": "🟢 {name}: <b>{ticket}</b>",
@@ -119,7 +120,7 @@ TR = {
         "⏳ <b>{name}</b>\nДо вашего билета <b>{my}</b> осталось {n}. "
         "Только что вызвали: <b>{current}</b>."
     ),
-    "alert_eta": "⏱ Примерно через {low}–{high} (≈ {at_low}–{at_high}).",
+    "alert_eta": "⏱ Ждать ещё ~{range} (≈ {at_low}–{at_high}).",
     "alert_every": (
         "🔔 <b>{name}</b>\nВызвали <b>{current}</b> · до вашего <b>{my}</b> осталось {n}."
     ),

@@ -21,7 +21,7 @@ def test_dashboard_mixed():
     assert "🔴 PDP — закрыта" in out
     assert "🟢 Karta — odbiór: <b>K054</b>" in out
     assert "впереди 36" in out  # 90 - 54
-    assert "~4 h 48 min" in out  # 36 * 300 * 1.6 = 17280 s
+    assert "~4 ч 48 мин" in out  # 36 * 300 * 1.6 = 17280 s
     assert "🟢 FAMI: <b>C020</b>" in out
 
 

@@ -25,8 +25,8 @@ def test_colours_and_advice():
     out = render_heatmap("Q", rows, "ru")
     assert "🟩" in out and "🟨" in out and "🟥" in out
     assert "⬜" in out  # most of the grid has no data
-    assert "Тише всего: Пн 08:00 (~10 min)" in out
-    assert "Больше всего: Пн 09:00 (~3 h 20 min)" in out
+    assert "Меньше всего ждать: Пн 08:00 (~10 мин)" in out
+    assert "Дольше всего: Пн 09:00 (~3 ч 20 мин)" in out
 
 
 def test_grid_has_all_weekday_rows():
@@ -37,4 +37,4 @@ def test_grid_has_all_weekday_rows():
 
 def test_polish_labels():
     out = render_heatmap("Q", [_r(1, 8, 10)], "pl")
-    assert "Pn" in out and "Najspokojniej" in out
+    assert "Pn" in out and "Najkrócej" in out
