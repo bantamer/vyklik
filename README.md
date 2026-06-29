@@ -16,6 +16,10 @@ while the queue grows.
 glance and updates itself in place as queues change. Each queue card also has a
 🔄 refresh button.
 
+`/stats` (or the 📊 button on a queue card) shows a weekday × hour heatmap of how
+busy each queue usually is, with a "quietest / busiest" recommendation — so you
+can pick the best time to come.
+
 > **Status:** scaffolding. Not deployed yet. See [open issues](https://github.com/bantamer/vyklik/issues) for the roadmap.
 
 ## How it works

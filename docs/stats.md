@@ -54,7 +54,16 @@ called_at    = now + eta_low … now + eta_high        (Europe/Warsaw)
 `bot/format.eta_text` / `eta_suffix` (rendering), `bot/handlers/queues.py` (card),
 `bot/notifier.py` (alert), `i18n/*` strings, `tests/test_eta.py`.
 
-## Feature A — "when is it best to come" heatmap (designed, not built)
+## Feature A — "when is it best to come" heatmap (shipped)
+
+> Built as described below. `/stats` (or the 📊 button on a queue card) renders a
+> Mon–Fri × 08–15 emoji grid normalized per queue, with a quietest/busiest advice
+> line. Data comes from the `queue_hourly_stats` matview, refreshed nightly at
+> 21:00 Europe/Warsaw by an APScheduler job in the poller.
+>
+> Known refinement (see open questions): the "quietest" pick can land on the last
+> slot before closing (shortest wait, but tickets may be gone) — weighting by
+> ticket availability is still phase 2.
 
 A weekday × hour heatmap per queue plus a one-line recommendation, computed from
 the same throughput model aggregated over history.

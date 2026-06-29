@@ -28,6 +28,20 @@ TR = {
         "Śr. oczekiwanie: {wait} · obsługa: {service}"
     ),
     "queue_no_data": "Brak świeżych danych dla tej kolejki.",
+    "btn_stats": "📊 Kiedy najlepiej przyjść",
+    "stats_pick": "Wybierz kolejkę, aby zobaczyć statystyki wg dni i godzin:",
+    "dow_1": "Pn",
+    "dow_2": "Wt",
+    "dow_3": "Śr",
+    "dow_4": "Cz",
+    "dow_5": "Pt",
+    "heatmap_title": "📊 <b>{name}</b>\nKiedy krótsza kolejka (godziny 8→15):",
+    "heatmap_legend": "🟩 spokojnie · 🟨 średnio · 🟥 tłok · ⬜ brak danych",
+    "heatmap_advice": (
+        "💡 Najspokojniej: {quiet_day} {quiet_h} (~{quiet_w}). "
+        "Najgorzej: {busy_day} {busy_h} (~{busy_w})."
+    ),
+    "heatmap_no_data": "📊 <b>{name}</b>\nZa mało danych na statystyki.",
     "eta_line": (
         "⏱ Przed tobą: <b>{ahead}</b>\n"
         "Wywołają cię mniej więcej za {low}–{high} (≈ {at_low}–{at_high})"

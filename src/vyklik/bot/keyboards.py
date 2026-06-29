@@ -16,7 +16,7 @@ def language_picker() -> InlineKeyboardMarkup:
 
 
 def queues_list(
-    queues: list[Queue], snapshots: dict[int, Snapshot], lang: str
+    queues: list[Queue], snapshots: dict[int, Snapshot], lang: str, action: str = "q"
 ) -> InlineKeyboardMarkup:
     rows = []
     for q in queues:
@@ -25,8 +25,18 @@ def queues_list(
             t("status_open", lang=lang) if snap and snap.enabled else t("status_closed", lang=lang)
         )
         name = q.display_pl if lang == "pl" else q.display_ru
-        rows.append([InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"q:{q.id}")])
+        rows.append(
+            [InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"{action}:{q.id}")]
+        )
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def heatmap_nav(queue_id: int, lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data=f"q:{queue_id}")]
+        ]
+    )
 
 
 def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeyboardMarkup:
@@ -104,6 +114,9 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                 )
             ]
         )
+    rows.append(
+        [InlineKeyboardButton(text=t("btn_stats", lang=lang), callback_data=f"stats:{queue.id}")]
+    )
     rows.append(
         [
             InlineKeyboardButton(text=t("btn_refresh", lang=lang), callback_data=f"q:{queue.id}"),
