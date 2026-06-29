@@ -140,7 +140,9 @@ def rearm_threshold(sub_id: int, dist: int, lang: str) -> InlineKeyboardMarkup |
     if not values:
         return None
     row = [
-        InlineKeyboardButton(text=t("btn_rearm", lang=lang, n=n), callback_data=f"rearm:{sub_id}:{n}")
+        InlineKeyboardButton(
+            text=t("btn_rearm", lang=lang, n=n), callback_data=f"rearm:{sub_id}:{n}"
+        )
         for n in values
     ]
     return InlineKeyboardMarkup(inline_keyboard=[row])

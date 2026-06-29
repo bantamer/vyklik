@@ -121,7 +121,9 @@ TR = {
         "Przed chwilą wywołano: <b>{current}</b>."
     ),
     "alert_eta": "⏱ Mniej więcej za {low}–{high} (≈ {at_low}–{at_high}).",
-    "alert_every": "🔔 <b>{name}</b>\nWywołano <b>{current}</b> · do Twojego <b>{my}</b> zostało {n}.",
+    "alert_every": (
+        "🔔 <b>{name}</b>\nWywołano <b>{current}</b> · do Twojego <b>{my}</b> zostało {n}."
+    ),
     "rearm_set": "Powiadomimy, gdy zostanie ≤ {n}.",
     "alert_opened": "📢 <b>{name}</b>\nRejestracja właśnie się otworzyła.",
     "alert_slots": ("🪑 <b>{name}</b>\nPojawiło się {n} wolnych miejsc — proszę się zapisać."),
