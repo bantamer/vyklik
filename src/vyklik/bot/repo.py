@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -48,6 +48,20 @@ async def latest_snapshot(session: AsyncSession, queue_id: int) -> Snapshot | No
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
+
+
+async def recent_snapshots(
+    session: AsyncSession, queue_id: int, *, minutes: int
+) -> list[tuple[datetime, int]]:
+    """Recent (ts, tickets_served) samples for a queue — feeds the live pace calc."""
+    cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
+    stmt = (
+        select(Snapshot.ts, Snapshot.tickets_served)
+        .where(Snapshot.queue_id == queue_id, Snapshot.ts >= cutoff)
+        .order_by(Snapshot.ts)
+    )
+    result = await session.execute(stmt)
+    return [(ts, served) for ts, served in result.all()]
 
 
 async def get_subscription(

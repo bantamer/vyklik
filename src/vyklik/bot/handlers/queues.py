@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime
 
 from aiogram import F, Router
 from aiogram.filters import Command
@@ -6,18 +7,44 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from vyklik.bot import keyboards, repo, tickets
-from vyklik.bot.format import queue_card_text
+from vyklik.bot.format import eta_text, queue_card_text
 from vyklik.bot.fsm import TicketEntry
+from vyklik.config import settings
 from vyklik.db import session
 from vyklik.i18n import t
+from vyklik.stats.eta import PACE_WINDOW_MINUTES, compute_pace
+from vyklik.work_hours import parse_schedule
 
 router = Router(name="queues")
 log = logging.getLogger("vyklik.bot.queues")
+_SCHEDULE = parse_schedule(settings.work_hours)
 
 
 async def _user_lang(s, tg_id: int) -> str:
     user = await repo.get_or_create_user(s, tg_id)
     return user.language
+
+
+async def _card_data(s, qid: int, user_id: int):
+    """Fetch everything a queue card needs, including pace samples when relevant."""
+    snap = await repo.latest_snapshot(s, qid)
+    sub = await repo.get_subscription(s, user_id, qid)
+    samples = (
+        await repo.recent_snapshots(s, qid, minutes=PACE_WINDOW_MINUTES)
+        if sub and sub.my_ticket
+        else []
+    )
+    return snap, sub, samples
+
+
+def _render_card(queue, snap, sub, samples, lang: str):
+    text = queue_card_text(queue, snap, lang)
+    my = sub.my_ticket if sub else None
+    if snap is not None and snap.enabled:
+        section = eta_text(snap, my, compute_pace(samples), lang, datetime.now(UTC), _SCHEDULE)
+        if section:
+            text += "\n\n" + section
+    return text, keyboards.queue_card(queue, sub, lang)
 
 
 async def _send_queue_list(target: Message | CallbackQuery, lang: str) -> None:
@@ -73,11 +100,9 @@ async def cb_queue_card(cb: CallbackQuery) -> None:
         if queue is None:
             await cb.answer("?")
             return
-        snap = await repo.latest_snapshot(s, qid)
-        sub = await repo.get_subscription(s, cb.from_user.id, qid)
+        snap, sub, samples = await _card_data(s, qid, cb.from_user.id)
         await s.commit()
-    text = queue_card_text(queue, snap, lang)
-    kb = keyboards.queue_card(queue, sub, lang)
+    text, kb = _render_card(queue, snap, sub, samples, lang)
     if cb.message is not None:
         try:
             await cb.message.edit_text(text, reply_markup=kb)
@@ -242,11 +267,9 @@ async def _refresh_queue_card(cb: CallbackQuery, qid: int) -> None:
         queue = next((q for q in queues if q.id == qid), None)
         if queue is None:
             return
-        snap = await repo.latest_snapshot(s, qid)
-        sub = await repo.get_subscription(s, cb.from_user.id, qid)
+        snap, sub, samples = await _card_data(s, qid, cb.from_user.id)
         await s.commit()
-    text = queue_card_text(queue, snap, lang)
-    kb = keyboards.queue_card(queue, sub, lang)
+    text, kb = _render_card(queue, snap, sub, samples, lang)
     if cb.message is not None:
         try:
             await cb.message.edit_text(text, reply_markup=kb)

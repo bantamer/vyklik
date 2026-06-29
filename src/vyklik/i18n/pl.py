@@ -28,6 +28,16 @@ TR = {
         "Śr. oczekiwanie: {wait} · obsługa: {service}"
     ),
     "queue_no_data": "Brak świeżych danych dla tej kolejki.",
+    "eta_line": (
+        "⏱ Przed tobą: <b>{ahead}</b>\n"
+        "Wywołają cię mniej więcej za {low}–{high} (≈ {at_low}–{at_high})"
+    ),
+    "eta_called": "🎯 Już cię wywołano albo jesteś następny!",
+    "eta_no_pace": (
+        "⏱ Przed tobą: <b>{ahead}</b>. Tempa jeszcze nie da się ocenić — "
+        "za wcześnie albo było za mało wywołań."
+    ),
+    "eta_today_unlikely": "⚠️ Dziś mogą nie zdążyć cię wywołać przed zamknięciem.",
     "btn_subscribe": "🔔 Subskrybuj",
     "btn_unsubscribe": "🔕 Wypisz się",
     "btn_set_ticket": "🎫 Ustaw mój numerek",
@@ -61,6 +71,7 @@ TR = {
         "⏳ <b>{name}</b>\nDo twojego numerka <b>{my}</b> zostało {n}. "
         "Wywołany właśnie: <b>{current}</b>."
     ),
+    "alert_eta": "⏱ Mniej więcej za {low}–{high} (≈ {at_low}–{at_high}).",
     "alert_opened": "📢 <b>{name}</b>\nRejestracja właśnie się otworzyła!",
     "alert_slots": ("🪑 <b>{name}</b>\nPojawiło się {n} wolnych miejsc — biegnij się zapisać!"),
 }
