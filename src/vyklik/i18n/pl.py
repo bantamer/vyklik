@@ -6,14 +6,16 @@ TR = {
         "lub gdy otworzy się rejestracja."
     ),
     "help": (
-        "Komendy:\n"
-        "/queues — lista kolejek\n"
-        "/mysubs — twoje subskrypcje\n"
-        "/dashboard — przypięty status\n"
-        "/stats — kiedy najlepiej przyjść\n"
-        "/feedback — napisz do autora\n"
-        "/lang — zmień język\n"
-        "/help — ta wiadomość"
+        "Śledzę kolejki DUW Wrocław i dam znać, gdy zbliża się twój numerek.\n\n"
+        "/queues — status wszystkich kolejek; wejdź w dowolną, by się zapisać "
+        "i podać swój numerek.\n"
+        "/mysubs — wszystkie twoje subskrypcje w jednym miejscu.\n"
+        "/dashboard — przypięta wiadomość ze statusem wszystkich twoich kolejek; "
+        "sama się aktualizuje.\n"
+        "/stats — mapa cieplna wg dni i godzin: kiedy mniejszy tłok "
+        "i krótsze czekanie.\n"
+        "/feedback — napisz do autora bota.\n"
+        "/lang — zmień język."
     ),
     "feedback_prompt": (
         "Napisz wiadomość — przekażę ją autorowi bota (twojego czatu nie zobaczy). "
