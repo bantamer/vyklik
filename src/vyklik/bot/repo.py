@@ -1,6 +1,6 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +24,10 @@ async def get_or_create_user(session: AsyncSession, tg_id: int, lang_hint: str =
     return user
 
 
+async def get_user(session: AsyncSession, tg_id: int) -> User | None:
+    return await session.get(User, tg_id)
+
+
 async def set_user_language(session: AsyncSession, tg_id: int, lang: str) -> None:
     user = await session.get(User, tg_id)
     if user is not None:
@@ -34,6 +38,34 @@ async def mark_blocked(session: AsyncSession, tg_id: int) -> None:
     user = await session.get(User, tg_id)
     if user is not None:
         user.blocked = True
+
+
+async def set_dashboard_message(session: AsyncSession, tg_id: int, message_id: int) -> None:
+    user = await session.get(User, tg_id)
+    if user is not None:
+        user.dashboard_message_id = message_id
+
+
+async def clear_dashboard_message(session: AsyncSession, tg_id: int) -> None:
+    user = await session.get(User, tg_id)
+    if user is not None:
+        user.dashboard_message_id = None
+
+
+async def users_with_dashboard_subscribed_to(session: AsyncSession, queue_id: int) -> list[int]:
+    """Telegram ids of non-blocked users with a pinned dashboard who subscribe to a queue."""
+    stmt = (
+        select(User.telegram_id)
+        .join(Subscription, Subscription.user_id == User.telegram_id)
+        .where(
+            Subscription.queue_id == queue_id,
+            User.dashboard_message_id.isnot(None),
+            User.blocked.is_(False),
+        )
+        .distinct()
+    )
+    result = await session.execute(stmt)
+    return [row[0] for row in result.all()]
 
 
 async def list_queues(session: AsyncSession) -> list[Queue]:
@@ -48,6 +80,40 @@ async def latest_snapshot(session: AsyncSession, queue_id: int) -> Snapshot | No
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
+
+
+async def recent_snapshots(
+    session: AsyncSession, queue_id: int, *, minutes: int
+) -> list[tuple[datetime, int]]:
+    """Recent (ts, tickets_served) samples for a queue — feeds the live pace calc."""
+    cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
+    stmt = (
+        select(Snapshot.ts, Snapshot.tickets_served)
+        .where(Snapshot.queue_id == queue_id, Snapshot.ts >= cutoff)
+        .order_by(Snapshot.ts)
+    )
+    result = await session.execute(stmt)
+    return [(ts, served) for ts, served in result.all()]
+
+
+async def queue_ticket_prefix(session: AsyncSession, queue_id: int) -> str | None:
+    """The queue's ticket series letter, from its most recent non-empty ticket.
+
+    DUW queues each use a single stable letter (verified over history); None when
+    the queue has never shown a ticket, so we can't validate."""
+    stmt = (
+        select(func.left(Snapshot.ticket_value, 1))
+        .where(
+            Snapshot.queue_id == queue_id,
+            Snapshot.ticket_value.isnot(None),
+            Snapshot.ticket_value != "",
+        )
+        .order_by(Snapshot.ts.desc())
+        .limit(1)
+    )
+    result = await session.execute(stmt)
+    prefix = result.scalar_one_or_none()
+    return prefix.upper() if prefix else None
 
 
 async def get_subscription(

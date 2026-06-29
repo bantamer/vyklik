@@ -27,7 +27,7 @@ async def on_pick_lang(cb: CallbackQuery) -> None:
     if cb.data is None or cb.from_user is None:
         return
     chosen = cb.data.split(":", 1)[1]
-    if chosen not in {"pl", "ru"}:
+    if chosen not in {"pl", "ru", "be"}:
         await cb.answer("?")
         return
     async with session() as s:

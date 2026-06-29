@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     poll_interval_seconds: int = Field(30, alias="POLL_INTERVAL_SECONDS")
     work_hours: str = Field("mon=8-16,tue=8-16,wed=8-16,thu=8-16,fri=8-16", alias="WORK_HOURS")
 
+    # Telegram chat id that /feedback messages are delivered to. Kept server-side
+    # so users never see the owner's account. Empty disables /feedback.
+    feedback_chat_id: int | None = Field(None, alias="FEEDBACK_CHAT_ID")
+
     duw_status_url: str = Field(
         "https://rezerwacje.duw.pl/app/webroot/status_kolejek/query.php?status",
         alias="DUW_STATUS_URL",

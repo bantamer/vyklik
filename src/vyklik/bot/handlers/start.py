@@ -14,7 +14,7 @@ async def cmd_start(message: Message) -> None:
     if message.from_user is None:
         return
     lang_hint = (message.from_user.language_code or "pl")[:2]
-    if lang_hint not in {"pl", "ru"}:
+    if lang_hint not in {"pl", "ru", "be"}:
         lang_hint = "pl"
     async with session() as s:
         user = await repo.get_or_create_user(s, message.from_user.id, lang_hint=lang_hint)

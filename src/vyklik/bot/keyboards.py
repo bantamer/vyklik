@@ -8,15 +8,16 @@ def language_picker() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🇵🇱 Polski", callback_data="lang:pl"),
-                InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
+                InlineKeyboardButton(text="Polski", callback_data="lang:pl"),
+                InlineKeyboardButton(text="Русский", callback_data="lang:ru"),
+                InlineKeyboardButton(text="Беларуская", callback_data="lang:be"),
             ]
         ]
     )
 
 
 def queues_list(
-    queues: list[Queue], snapshots: dict[int, Snapshot], lang: str
+    queues: list[Queue], snapshots: dict[int, Snapshot], lang: str, action: str = "q"
 ) -> InlineKeyboardMarkup:
     rows = []
     for q in queues:
@@ -25,8 +26,18 @@ def queues_list(
             t("status_open", lang=lang) if snap and snap.enabled else t("status_closed", lang=lang)
         )
         name = q.display_pl if lang == "pl" else q.display_ru
-        rows.append([InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"q:{q.id}")])
+        rows.append(
+            [InlineKeyboardButton(text=f"{status[0]} {name}", callback_data=f"{action}:{q.id}")]
+        )
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def heatmap_nav(queue_id: int, lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data=f"q:{queue_id}")]
+        ]
+    )
 
 
 def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeyboardMarkup:
@@ -54,6 +65,20 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                     InlineKeyboardButton(
                         text=f"{t('btn_clear_ticket', lang=lang)} ({sub.my_ticket})",
                         callback_data=f"ticket_clear:{sub.id}",
+                    )
+                ]
+            )
+            rows.append(
+                [
+                    InlineKeyboardButton(
+                        text=t(
+                            "btn_toggle_every",
+                            lang=lang,
+                            state=t("on", lang=lang)
+                            if sub.alert_every_call
+                            else t("off", lang=lang),
+                        ),
+                        callback_data=f"toggle_every:{sub.id}",
                     )
                 ]
             )
@@ -90,8 +115,37 @@ def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeybo
                 )
             ]
         )
-    rows.append([InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues")])
+    rows.append(
+        [InlineKeyboardButton(text=t("btn_stats", lang=lang), callback_data=f"stats:{queue.id}")]
+    )
+    rows.append(
+        [
+            InlineKeyboardButton(text=t("btn_refresh", lang=lang), callback_data=f"q:{queue.id}"),
+            InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="queues"),
+        ]
+    )
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+# Tighter thresholds offered as one-tap re-arm buttons on a "N tickets left" alert.
+_REARM_LADDER = [5, 3, 2, 1]
+
+
+def rearm_threshold(sub_id: int, dist: int, lang: str) -> InlineKeyboardMarkup | None:
+    """Buttons to re-arm the threshold alert at a tighter value, in one tap.
+
+    Offers only values strictly below the current distance (a value ≥ dist would
+    fire again immediately). Returns None when there's nothing tighter to offer."""
+    values = [n for n in _REARM_LADDER if n < dist]
+    if not values:
+        return None
+    row = [
+        InlineKeyboardButton(
+            text=t("btn_rearm", lang=lang, n=n), callback_data=f"rearm:{sub_id}:{n}"
+        )
+        for n in values
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=[row])
 
 
 def mysubs_list(items: list[tuple[Subscription, Queue]], lang: str) -> InlineKeyboardMarkup:

@@ -3,6 +3,7 @@ import logging
 from datetime import UTC, datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from vyklik.config import settings
@@ -10,7 +11,8 @@ from vyklik.db import session
 from vyklik.duw_client import fetch_wroclaw
 from vyklik.poller.ingest import ingest
 from vyklik.queues_loader import QueueDisplay, load
-from vyklik.work_hours import is_working, parse_schedule
+from vyklik.stats.aggregate import refresh_heatmap
+from vyklik.work_hours import TZ, is_working, parse_schedule
 
 log = logging.getLogger("vyklik.poller.scheduler")
 
@@ -33,6 +35,14 @@ async def _run_once(catalog: dict[int, QueueDisplay], schedule: dict[int, tuple[
         log.exception("ingest failed")
 
 
+async def _refresh_stats() -> None:
+    try:
+        await refresh_heatmap()
+        log.info("heatmap stats refreshed")
+    except Exception:
+        log.exception("heatmap refresh failed")
+
+
 async def run() -> None:
     catalog = load()
     schedule = parse_schedule(settings.work_hours)
@@ -49,6 +59,13 @@ async def run() -> None:
         trigger=IntervalTrigger(seconds=settings.poll_interval_seconds),
         kwargs={"catalog": catalog, "schedule": schedule},
         next_run_time=datetime.now(UTC),
+        max_instances=1,
+        coalesce=True,
+    )
+    # Recompute the heatmap once a night, after queues close.
+    scheduler.add_job(
+        _refresh_stats,
+        trigger=CronTrigger(hour=21, minute=0, timezone=TZ),
         max_instances=1,
         coalesce=True,
     )

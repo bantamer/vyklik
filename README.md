@@ -6,6 +6,20 @@ Telegram bot that watches the [DUW Wrocław](https://rezerwacje.duw.pl/app/webro
 - the queue gets close to your ticket,
 - a closed registration window opens up / new slots appear.
 
+Open a queue with your ticket set and the card also shows a live **"when will I be
+called"** estimate. It's computed from the queue's *current* serving pace (how fast
+`tickets_served` advances in our own snapshot history), not from DUW's
+`average_wait_time` — which is a backward-looking average that lags and under-reports
+while the queue grows.
+
+`/dashboard` pins a single message that lists every subscription's status at a
+glance and updates itself in place as queues change. Each queue card also has a
+🔄 refresh button.
+
+`/stats` (or the 📊 button on a queue card) shows a weekday × hour heatmap of how
+busy each queue usually is, with a "quietest / busiest" recommendation — so you
+can pick the best time to come.
+
 > **Status:** scaffolding. Not deployed yet. See [open issues](https://github.com/bantamer/vyklik/issues) for the roadmap.
 
 ## How it works

@@ -18,6 +18,18 @@ def parse(value: str) -> tuple[str, int] | None:
     return v[0], int(v[1:])
 
 
+def wrong_series(ticket: str, expected_prefix: str | None) -> bool:
+    """True only when the ticket clearly belongs to a different series than the
+    queue's. False when either side is unknown (can't tell) or they match —
+    we never block on uncertainty."""
+    if not expected_prefix:
+        return False
+    p = parse(ticket)
+    if p is None:
+        return False
+    return p[0] != expected_prefix.upper()
+
+
 def distance(my: str | None, current: str | None) -> int | None:
     """Tickets remaining before `my` is called. None if either is unparseable
     or the series differ. Negative means we've already been passed."""

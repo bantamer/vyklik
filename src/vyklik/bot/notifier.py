@@ -1,17 +1,25 @@
 import asyncio
 import json
 import logging
+from datetime import UTC, datetime
 
 import asyncpg
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter
+from aiogram.types import InlineKeyboardMarkup
 
-from vyklik.bot import repo, tickets
+from vyklik.bot import keyboards, repo, tickets
+from vyklik.bot.format import eta_suffix
+from vyklik.bot.handlers.dashboard import update_dashboards_for_queue
+from vyklik.config import settings
 from vyklik.db import asyncpg_connect, session
 from vyklik.i18n import t
 from vyklik.poller.ingest import NOTIFY_CHANNEL
+from vyklik.stats.eta import PACE_WINDOW_MINUTES, compute_pace
+from vyklik.work_hours import parse_schedule
 
 log = logging.getLogger("vyklik.bot.notifier")
+_SCHEDULE = parse_schedule(settings.work_hours)
 
 
 async def notifier_loop(bot: Bot) -> None:
@@ -79,6 +87,9 @@ async def _handle(bot: Bot, event: dict) -> None:
             extra={"n": payload.get("tickets_left")},
         )
 
+    # Keep pinned dashboards live for anyone watching this queue.
+    await update_dashboards_for_queue(bot, qid)
+
 
 async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
     current_ticket = payload.get("ticket_value")
@@ -86,9 +97,11 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
         queues = await repo.list_queues(s)
         queue = next((q for q in queues if q.id == qid), None)
         subs = await repo.list_subs_with_my_ticket(s, qid)
+        samples = await repo.recent_snapshots(s, qid, minutes=PACE_WINDOW_MINUTES)
         await s.commit()
     if queue is None:
         return
+    pace = compute_pace(samples)
 
     for sub in subs:
         if not current_ticket or not sub.my_ticket:
@@ -122,24 +135,42 @@ async def _handle_ticket_called(bot: Bot, qid: int, payload: dict) -> None:
                         sub_db.my_ticket = None
                         sub_db.alert_n_before = None
                     await s.commit()
+        elif sub.alert_every_call and dist > 0:
+            event_key = f"every:{current_ticket}"
+            async with session() as s:
+                inserted = await repo.record_sent(s, sub.id, event_key)
+                await s.commit()
+            if inserted:
+                text = t(
+                    "alert_every",
+                    lang=lang,
+                    name=name,
+                    current=current_ticket,
+                    my=sub.my_ticket,
+                    n=dist,
+                )
+                suffix = eta_suffix(dist, pace, lang, datetime.now(UTC), _SCHEDULE)
+                if suffix:
+                    text += "\n" + suffix
+                await _send(bot, sub.user_id, text)
         elif sub.alert_n_before is not None and 0 < dist <= sub.alert_n_before:
             event_key = f"before:{sub.my_ticket}:{sub.alert_n_before}"
             async with session() as s:
                 inserted = await repo.record_sent(s, sub.id, event_key)
                 await s.commit()
             if inserted:
-                await _send(
-                    bot,
-                    sub.user_id,
-                    t(
-                        "alert_close",
-                        lang=lang,
-                        name=name,
-                        my=sub.my_ticket,
-                        n=dist,
-                        current=current_ticket,
-                    ),
+                text = t(
+                    "alert_close",
+                    lang=lang,
+                    name=name,
+                    my=sub.my_ticket,
+                    n=dist,
+                    current=current_ticket,
                 )
+                suffix = eta_suffix(dist, pace, lang, datetime.now(UTC), _SCHEDULE)
+                if suffix:
+                    text += "\n" + suffix
+                await _send(bot, sub.user_id, text, keyboards.rearm_threshold(sub.id, dist, lang))
 
 
 async def _fanout_flag(
@@ -172,9 +203,11 @@ async def _fanout_flag(
         await _send(bot, sub.user_id, text)
 
 
-async def _send(bot: Bot, chat_id: int, text: str) -> None:
+async def _send(
+    bot: Bot, chat_id: int, text: str, reply_markup: InlineKeyboardMarkup | None = None
+) -> None:
     try:
-        await bot.send_message(chat_id, text)
+        await bot.send_message(chat_id, text, reply_markup=reply_markup)
     except TelegramForbiddenError:
         async with session() as s:
             await repo.mark_blocked(s, chat_id)
@@ -184,7 +217,7 @@ async def _send(bot: Bot, chat_id: int, text: str) -> None:
         log.warning("telegram rate-limit, sleeping %ss", exc.retry_after)
         await asyncio.sleep(exc.retry_after)
         try:
-            await bot.send_message(chat_id, text)
+            await bot.send_message(chat_id, text, reply_markup=reply_markup)
         except Exception:
             log.exception("retry after rate-limit also failed for chat %s", chat_id)
     except asyncpg.exceptions.PostgresError:
