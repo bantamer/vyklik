@@ -104,10 +104,14 @@ def dashboard_text(
     """One-line-per-subscription status board. Rows are (name, snap, my_ticket, pace)."""
     lines = [t("dashboard_header", lang=lang, time=now_local.strftime("%H:%M"))]
     for name, snap, my_ticket, pace in rows:
-        if snap is None or not snap.enabled:
-            lines.append(t("dashboard_line_closed", lang=lang, name=name))
+        if snap is None:
+            lines.append(t("dashboard_line_nodata", lang=lang, name=name))
             continue
-        line = t("dashboard_line_open", lang=lang, name=name, ticket=snap.ticket_value or "—")
+        # "Closed" means no new tickets are issued, but the queue keeps calling
+        # the numbers already out — so we still show the current number and the
+        # user's position; only the leading marker/label changes.
+        key = "dashboard_line_open" if snap.enabled else "dashboard_line_closed"
+        line = t(key, lang=lang, name=name, ticket=snap.ticket_value or "—")
         if my_ticket:
             ahead = tickets.distance(my_ticket, snap.ticket_value)
             if ahead is None:

@@ -18,7 +18,8 @@ def test_dashboard_mixed():
     ]
     out = dashboard_text(rows, "ru", NOON)
     assert "обновлено 12:00" in out
-    assert "🔴 PDP — закрыта" in out
+    # Closed for new tickets, but the current number is still shown.
+    assert "🔴 PDP: <b>K014</b> · запись закрыта" in out
     assert "🟢 Karta — odbiór: <b>K054</b>" in out
     assert "впереди 36" in out  # 90 - 54
     assert "~4 ч 48 мин" in out  # 36 * 300 * 1.6 = 17280 s
@@ -46,7 +47,16 @@ def test_dashboard_different_series():
     assert "впереди" not in out
 
 
-def test_dashboard_closed_no_snapshot():
+def test_dashboard_no_snapshot():
     rows = [("Q", None, "K020", None)]
     out = dashboard_text(rows, "ru", NOON)
-    assert "🔴 Q — закрыта" in out
+    assert "⚪ Q — нет данных" in out
+
+
+def test_dashboard_closed_still_shows_position():
+    # A "closed" queue keeps calling issued numbers, so a subscriber with a
+    # ticket must still see the current number and how many are ahead.
+    rows = [("Q", _snap(enabled=False, ticket_value="K010"), "K020", 60.0)]
+    out = dashboard_text(rows, "ru", NOON)
+    assert "🔴 Q: <b>K010</b> · запись закрыта" in out
+    assert "впереди 10" in out

@@ -40,6 +40,16 @@ def heatmap_nav(queue_id: int, lang: str) -> InlineKeyboardMarkup:
     )
 
 
+def heatmap_close(lang: str) -> InlineKeyboardMarkup:
+    """Back button for the heatmap *photo* — deletes it (can't edit a photo back
+    into the text card), revealing the card/picker still above it."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="heatmap_close")]
+        ]
+    )
+
+
 def queue_card(queue: Queue, sub: Subscription | None, lang: str) -> InlineKeyboardMarkup:
     rows: list[list[InlineKeyboardButton]] = []
     if sub is None:
@@ -148,6 +158,28 @@ def rearm_threshold(sub_id: int, dist: int, lang: str) -> InlineKeyboardMarkup |
                 )
             ]
             for n in values
+        ]
+    )
+
+
+# FAQ question ids → i18n keys `faq_q_<id>` (button) and `faq_a_<id>` (answer).
+# Order is the display order in the menu.
+FAQ_IDS = ("closed", "refresh", "alerts", "persist")
+
+
+def faq_menu(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t(f"faq_q_{qid}", lang=lang), callback_data=f"faq:{qid}")]
+            for qid in FAQ_IDS
+        ]
+    )
+
+
+def faq_back(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t("btn_back", lang=lang), callback_data="faq:menu")]
         ]
     )
 

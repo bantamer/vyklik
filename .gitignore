@@ -12,6 +12,9 @@ venv/
 .env.*
 !.env.example
 
+# Local feature notes / scratch (not for the public repo)
+FEATURE-*.md
+
 # Editors / OS
 .idea/
 .vscode/
