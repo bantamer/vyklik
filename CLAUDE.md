@@ -31,14 +31,16 @@ The poller writes; the bot reads + sends. They never touch each other's data dir
 
 ## User-facing update notes (release broadcasts)
 
-When announcing a release to subscribers, follow this format. Keep it short — people skim. One message **per bot language**, formal address (see Tone above), HTML parse mode.
+Keep it short — people skim. Follow the established house style (see `release-notes/0.1.0/`):
 
-- **Header:** `✨ <b>Vyklik update</b>` — no version number, users don't care.
-- **Body:** one line per *user-visible* change, most useful first. Each line = emoji + `<b>/command</b>` (or feature name) + what changed, framed as the benefit. Skip internal/cosmetic changes (schema, refactors, avatar, deploy).
-- **Sign-off:** one short friendly line (e.g. "Спасибо, что пользуетесь ботом! 💙").
-- **Localize** into every bot language (PL/RU/BE). At send time, cohorts with no users simply receive nothing — no need to drop the text.
+- **Header:** `📣 What's new`, localized — RU «📣 Что нового в боте», PL «📣 Co nowego w bocie», BE «📣 Што новага ў боце». No version number.
+- **Body:** plain text, **no `<b>`** — Telegram auto-links `/commands`. One line per *user-visible* change, most useful first: emoji + `/command` (or feature) + short benefit. Lines are consecutive (no blank line between them), one blank line after the header. Skip internal/cosmetic changes (schema, refactors, avatar, deploy).
+- **No sign-off**, no filler.
+- Formal address (see Tone above).
 
-Delivery: a one-off script (run in the bot container), *not* i18n keys — these are one-time. Select `telegram_id, language FROM users WHERE NOT blocked`, pick the text by each user's `language` (same fallback chain as the bot: `be→ru→pl`, `ru→pl`), send via the bot token, catch `TelegramForbidden` → mark `blocked`, throttle to ~30 msg/s. Optionally send a test to the owner's id first.
+**Storage:** commit each release's texts under `release-notes/<version>/<lang>.md` (one file per language, content = the exact message sent). Belarusian file is `by.md` (the script maps the DB code `be` → `by`); also keep `en.md` as an archive even though the bot has no EN users.
+
+**Delivery:** `ops/broadcast.py` (not i18n — one-time). It loads `release-notes/<version>/`, selects `telegram_id, language FROM users WHERE NOT blocked`, picks each user's text (fallback `be→ru→pl`, `ru→pl`), catches `TelegramForbidden` → marks `blocked`, throttles under the rate limit. Run it inside the bot container (`docker compose cp` the script + notes in, then `exec`); do a `dry` run and a `test` to the owner before `all`. See the script's docstring.
 
 ## Layout
 
