@@ -33,20 +33,35 @@ def _fmt_minutes(minutes: float, lang: str) -> str:
     return f"{h} {t('dur_h', lang=lang)}"
 
 
-def _colour(value: float, lo: float, hi: float) -> str:
+# Wait-time buckets, shared by the text grid and the PNG renderer so both colour
+# a cell identically.
+BUCKET_LOW = "low"
+BUCKET_MID = "mid"
+BUCKET_HIGH = "high"
+
+
+def bucket(value: float, lo: float, hi: float) -> str:
+    """Which third of the [lo, hi] wait-time range a value falls in."""
     if hi <= lo:
-        return "🟩"
+        return BUCKET_LOW
     frac = (value - lo) / (hi - lo)
     if frac < 1 / 3:
-        return "🟩"
+        return BUCKET_LOW
     if frac < 2 / 3:
-        return "🟨"
-    return "🟥"
+        return BUCKET_MID
+    return BUCKET_HIGH
 
 
-def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
-    by_cell = {(r.dow, r.hour): r for r in rows}
-    usable = [
+_BUCKET_EMOJI = {BUCKET_LOW: "🟩", BUCKET_MID: "🟨", BUCKET_HIGH: "🟥"}
+
+
+def _colour(value: float, lo: float, hi: float) -> str:
+    return _BUCKET_EMOJI[bucket(value, lo, hi)]
+
+
+def usable_cells(rows: list[HourStatLike]) -> list[HourStatLike]:
+    """Cells inside office hours with enough samples and a wait estimate."""
+    return [
         r
         for r in rows
         if r.dow in DOWS
@@ -54,6 +69,30 @@ def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
         and r.samples >= MIN_SAMPLES
         and r.est_wait_min is not None
     ]
+
+
+def advice_line(rows: list[HourStatLike], lang: str) -> str | None:
+    """The "quietest / busiest slot" recommendation, or None without data."""
+    usable = usable_cells(rows)
+    if not usable:
+        return None
+    quiet = min(usable, key=lambda r: r.est_wait_min)
+    busy = max(usable, key=lambda r: r.est_wait_min)
+    return t(
+        "heatmap_advice",
+        lang=lang,
+        quiet_day=t(f"dow_{quiet.dow}", lang=lang),
+        quiet_h=f"{quiet.hour:02d}:00",
+        quiet_w=_fmt_minutes(quiet.est_wait_min, lang),
+        busy_day=t(f"dow_{busy.dow}", lang=lang),
+        busy_h=f"{busy.hour:02d}:00",
+        busy_w=_fmt_minutes(busy.est_wait_min, lang),
+    )
+
+
+def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
+    by_cell = {(r.dow, r.hour): r for r in rows}
+    usable = usable_cells(rows)
     if not usable:
         return t("heatmap_no_data", lang=lang, name=name)
 
@@ -75,18 +114,6 @@ def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
         grid.append(f"{t(f'dow_{dow}', lang=lang)} " + " ".join(cells))
     block = "<pre>" + "\n".join(grid) + "</pre>"
 
-    quiet = min(usable, key=lambda r: r.est_wait_min)
-    busy = max(usable, key=lambda r: r.est_wait_min)
-    advice = t(
-        "heatmap_advice",
-        lang=lang,
-        quiet_day=t(f"dow_{quiet.dow}", lang=lang),
-        quiet_h=f"{quiet.hour:02d}:00",
-        quiet_w=_fmt_minutes(quiet.est_wait_min, lang),
-        busy_day=t(f"dow_{busy.dow}", lang=lang),
-        busy_h=f"{busy.hour:02d}:00",
-        busy_w=_fmt_minutes(busy.est_wait_min, lang),
-    )
     return "\n".join(
         [
             t("heatmap_title", lang=lang, name=name),
@@ -94,6 +121,6 @@ def render_heatmap(name: str, rows: list[HourStatLike], lang: str) -> str:
             "",
             t("heatmap_legend", lang=lang),
             "",
-            advice,
+            advice_line(rows, lang) or "",
         ]
     )

@@ -7,7 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from vyklik.bot.commands import set_my_commands
+from vyklik.bot.commands import set_my_commands, set_my_descriptions
 from vyklik.bot.handlers import all_routers
 from vyklik.bot.notifier import notifier_loop
 from vyklik.config import settings
@@ -30,6 +30,7 @@ async def main_async() -> None:
         dp.include_router(router)
 
     await set_my_commands(bot)
+    await set_my_descriptions(bot)
     log.info("bot starting (long polling)")
 
     notifier_task = asyncio.create_task(notifier_loop(bot))

@@ -33,6 +33,47 @@ TR = {
     "cmd_feedback": "Napisz do autora",
     "cmd_lang": "Zmień język",
     "cmd_help": "Pomoc",
+    "cmd_faq": "Najczęstsze pytania",
+    "bot_short_description": (
+        "Śledzi kolejki DUW Wrocław i powiadamia, gdy wywołają Twój bilet lub otworzą się zapisy."
+    ),
+    "bot_description": (
+        "Bot śledzi kolejki DUW we Wrocławiu i powiadamia, gdy:\n"
+        "• wywołają Twój bilet,\n"
+        "• kolejka zbliża się do Twojego numeru,\n"
+        "• otworzą się zapisy / pojawią się wolne miejsca.\n\n"
+        "Podaj swój bilet — bot pokaże na żywo „kiedy Cię wywołają”, "
+        "statystyki obłożenia wg dni i godzin oraz przypięty status "
+        "wszystkich Twoich kolejek.\n\n"
+        "Naciśnij „Start”, aby zacząć."
+    ),
+    "faq_intro": "❓ <b>Najczęstsze pytania</b>\n\nWybierz pytanie:",
+    "faq_q_closed": "Co znaczy „zapisy zamknięte”?",
+    "faq_a_closed": (
+        "<b>Co znaczy „zapisy zamknięte”?</b>\n\n"
+        "Kolejka nie wydaje nowych biletów, ale nadal wywołuje już wydane "
+        "numery. Twoja pozycja i szacowany czas w /dashboard są nadal liczone."
+    ),
+    "faq_q_refresh": "Jak często odświeżane są dane?",
+    "faq_a_refresh": (
+        "<b>Jak często odświeżane są dane?</b>\n\n"
+        "Bot odpytuje DUW mniej więcej co 30 sekund w godzinach pracy "
+        "(pon.–pt., 8:00–16:00). Tablica (/dashboard) odświeża się automatycznie."
+    ),
+    "faq_q_alerts": "Kiedy przychodzą powiadomienia?",
+    "faq_a_alerts": (
+        "<b>Kiedy przychodzą powiadomienia?</b>\n\n"
+        "Na podstawie zdarzeń, nie harmonogramu: gdy wywołają Twój bilet (lub "
+        "na N biletów przed nim) oraz gdy otworzą się zapisy. Ustawisz to w "
+        "karcie kolejki w /queues."
+    ),
+    "faq_q_persist": "Czy trzeba włączać powiadomienia codziennie od nowa?",
+    "faq_a_persist": (
+        "<b>Czy trzeba włączać powiadomienia codziennie od nowa?</b>\n\n"
+        "Nie. Ustawienia subskrypcji są zapamiętywane na stałe. Kasowany jest "
+        "tylko Twój bilet po jego wywołaniu — na nowy dzień podaj nowy numer. "
+        "Powiadomienia o otwarciu zapisów działają, dopóki ich nie wyłączysz."
+    ),
     "language_set": "Język ustawiony: polski.",
     "status_open": "🟢 otwarta",
     "status_closed": "🔴 zamknięta",
@@ -56,6 +97,9 @@ TR = {
     "dow_5": "Pt",
     "heatmap_title": "📊 <b>{name}</b>\nCzas oczekiwania wg dni i godzin:",
     "heatmap_legend": "🟩 krótko · 🟨 średnio · 🟥 długo · ⬜ brak danych",
+    "heatmap_legend_short": "krócej",
+    "heatmap_legend_long": "dłużej",
+    "heatmap_caption_hint": "Liczba w komórce to minuty oczekiwania.",
     "heatmap_advice": (
         "💡 Najkrócej: {quiet_day} {quiet_h} (~{quiet_w}). "
         "Najdłużej: {busy_day} {busy_h} (~{busy_w})."
@@ -84,9 +128,13 @@ TR = {
     "dur_h": "godz",
     "dur_min": "min",
     "dur_s": "s",
+    # Compact units for the heatmap cells, where space is tight (e.g. "1h45m").
+    "dur_h_c": "h",
+    "dur_min_c": "m",
     "dashboard_header": "📌 <b>Moje kolejki</b> · aktualizacja {time}",
-    "dashboard_line_closed": "🔴 {name} — zamknięta",
+    "dashboard_line_closed": "🔴 {name}: <b>{ticket}</b> · zapisy zamknięte",
     "dashboard_line_open": "🟢 {name}: <b>{ticket}</b>",
+    "dashboard_line_nodata": "⚪ {name} — brak danych",
     "dashboard_mine": " · Twój {my}, przed Tobą {n}",
     "dashboard_mine_eta": " · Twój {my}, przed Tobą {n} (~{eta})",
     "dashboard_mine_called": " · Twój {my} ✅",

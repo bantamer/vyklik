@@ -39,7 +39,10 @@ async def _build_rows(s, user_id: int, lang: str):
         name = queue.display_pl if lang == "pl" else queue.display_ru
         snap = await repo.latest_snapshot(s, sub.queue_id)
         pace = None
-        if sub.my_ticket and snap is not None and snap.enabled:
+        # A "closed" queue is closed for *new tickets* only — it keeps calling
+        # the numbers already issued, so the pace is still meaningful. Gate on
+        # having a snapshot, not on `enabled`.
+        if sub.my_ticket and snap is not None:
             samples = await repo.recent_snapshots(s, sub.queue_id, minutes=PACE_WINDOW_MINUTES)
             pace = compute_pace(samples)
         rows.append((name, snap, sub.my_ticket, pace))

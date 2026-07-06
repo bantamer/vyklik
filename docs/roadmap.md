@@ -88,4 +88,55 @@ new threshold through the whole FSM; and anxious users want every update.
 The owner sees the sender's name/username/id + language for follow-up; any command
 (incl. `/cancel`) aborts the flow. Empty `FEEDBACK_CHAT_ID` disables the command.
 
-## 5. _Further features — to be added._
+## 5. Unify "you can register now" alerts — designed, not built
+
+**Pain:** we have two independent events and two toggles that mean almost the
+same thing to a user who wants to *book an appointment*:
+- `queue_opened` — `enabled` flips false→true (📢 "opened" toggle).
+- `slots_appeared` — `tickets_left` goes 0→>0 (🪑 "new slots" toggle).
+
+When a queue opens it usually also has slots, so both fire → a double ping.
+And the "queue already open, slots topped up" case only fires the second one.
+Two toggles for one intent is confusing.
+
+**Do:** collapse both into a single **"bookable now"** signal:
+
+```
+bookable = enabled AND tickets_left > 0
+```
+
+Emit when a queue transitions **not-bookable → bookable**. An open queue with
+0 slots is not actionable → stay silent until slots appear.
+
+- *diff.py:* replace `queue_opened` + `slots_appeared` with one `bookable`
+  event carrying `tickets_left`; fire on `cur_bookable and not prev_bookable`.
+- *Dedup:* fire on **every** 0→bookable transition (decided). Slots are grabbed
+  in seconds and can reappear in the afternoon, so per-day dedup would miss real
+  openings. Event key ties to the transition, not the date. (Watch for flicker
+  0→1→0→1 within one poll cycle — if it becomes a problem, add a short cooldown.)
+- *Schema:* migrate `alert_on_open` + `alert_on_slots` → one `alert_on_bookable`
+  (`OR` the two on the way in), drop the old columns. One toggle on the card.
+- *notifier / i18n / keyboards / tests:* one template ("you can register now,
+  N slots"), one toggle, update fanout + fixtures.
+
+**Effort:** medium — one migration, poller + notifier + keyboards + i18n + tests.
+
+## 6. /faq + "closed" semantics in the dashboard — shipped
+
+**Fixed:** a "closed" queue is closed **for new tickets only** — it keeps calling
+already-issued numbers. The dashboard used to drop the number, the user's
+position, and the ETA when `enabled` was false. Now it keeps all of them and only
+swaps the marker/label ("registration closed"); a truly missing snapshot shows a
+distinct `⚪ … no data` line.
+
+**Shipped:** a separate `/faq` command (kept out of `/help` so that stays short)
+explaining what "closed" means and how often data refreshes (~30 s poll during
+office hours Mon–Fri 8–16; dashboard self-updates, alerts are event-driven).
+
+## 7. User "report" / case timeline — idea only
+
+See the local (gitignored) `FEATURE-report.md`: a form for users to report real
+milestone dates (submit → summons → Przybysz status → pickup SMS → card printed)
+so we can aggregate "how long each stage really takes." Not scoped yet.
+
+## 8. _Further features — to be added._

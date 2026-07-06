@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="v" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#1e1b4b" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="640" height="360" fill="url(#bg)"/>
+
+  <!-- content group, translated so the whole mark+wordmark sits centered -->
+  <g transform="translate(45 -8)">
+  <!-- ticket mark -->
+  <g transform="translate(152 180) rotate(-7)" filter="url(#shadow)">
+    <rect x="-96" y="-66" width="192" height="132" rx="24" fill="#ffffff"/>
+    <line x1="-30" y1="-54" x2="-30" y2="54" stroke="#c7d2fe" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="2 18"/>
+    <circle cx="-62" cy="0" r="19" fill="#22c55e"/>
+    <text x="38" y="0" font-family="Arial, Helvetica, sans-serif" font-size="108"
+          font-weight="800" fill="url(#v)" text-anchor="middle"
+          dominant-baseline="central">V</text>
+  </g>
+
+  <!-- wordmark + subtitles on the right -->
+  <text x="300" y="152" font-family="Arial, Helvetica, sans-serif" font-size="72"
+        font-weight="800" fill="#ffffff">Vyklik</text>
+  <text x="303" y="202" font-family="Arial, Helvetica, sans-serif" font-size="30"
+        font-weight="600" fill="#e0e7ff">DUW Wrocław</text>
+  <text x="303" y="240" font-family="Arial, Helvetica, sans-serif" font-size="23"
+        font-weight="400" fill="#c7d2fe">queue tracker &amp; alerts</text>
+  </g>
+</svg>

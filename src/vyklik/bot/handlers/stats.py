@@ -1,15 +1,17 @@
 import logging
+from contextlib import suppress
 
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import BufferedInputFile, CallbackQuery, Message
 
 from vyklik.bot import keyboards, repo
 from vyklik.db import session
 from vyklik.i18n import t
 from vyklik.stats.aggregate import fetch_queue_heatmap
-from vyklik.stats.heatmap import render_heatmap
+from vyklik.stats.heatmap import advice_line
+from vyklik.stats.heatmap_image import render_heatmap_png
 
 router = Router(name="stats")
 log = logging.getLogger("vyklik.bot.stats")
@@ -53,11 +55,36 @@ async def cb_stats(cb: CallbackQuery) -> None:
         await cb.answer("?")
         return
     name = queue.display_pl if lang == "pl" else queue.display_ru
-    text = render_heatmap(name, rows, lang)
-    kb = keyboards.heatmap_nav(qid, lang)
+    png = render_heatmap_png(name, rows, lang)
+
+    # Not enough data to colour a single cell → keep the text no-data path, which
+    # can still be edited in place (it's a text message, unlike the photo).
+    if png is None:
+        text = t("heatmap_no_data", lang=lang, name=name)
+        kb = keyboards.heatmap_nav(qid, lang)
+        if cb.message is not None:
+            try:
+                await cb.message.edit_text(text, reply_markup=kb)
+            except TelegramBadRequest:
+                await cb.message.answer(text, reply_markup=kb)
+        await cb.answer()
+        return
+
+    caption = t("heatmap_caption_hint", lang=lang)
+    advice = advice_line(rows, lang)
+    if advice:
+        caption = f"{advice}\n\n{caption}"
+    photo = BufferedInputFile(png, filename="heatmap.png")
     if cb.message is not None:
-        try:
-            await cb.message.edit_text(text, reply_markup=kb)
-        except TelegramBadRequest:
-            await cb.message.answer(text, reply_markup=kb)
+        await cb.message.answer_photo(
+            photo, caption=caption, reply_markup=keyboards.heatmap_close(lang)
+        )
+    await cb.answer()
+
+
+@router.callback_query(F.data == "heatmap_close")
+async def cb_heatmap_close(cb: CallbackQuery) -> None:
+    if cb.message is not None:
+        with suppress(Exception):
+            await cb.message.delete()
     await cb.answer()
