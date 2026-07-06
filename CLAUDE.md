@@ -21,12 +21,24 @@ The poller writes; the bot reads + sends. They never touch each other's data dir
 ## Conventions
 
 - **Language:** all code, comments, commits, docs, and PR titles in **English**. The bot's user-facing strings live in `src/vyklik/i18n/` (PL + RU at MVP, more languages welcome).
+- **Tone / address:** address users **formally**, never informal "ty". RU/BE: «вы» (lowercase, polite). PL: formal/impersonal — prefer impersonal polite ("Proszę wybrać…") or Pan/Pani; **avoid** informal `ty`/`Twój`/`Ciebie` forms. This applies to every user-facing string and to update-note broadcasts.
 - **Style:** `ruff format` + `ruff check`. Type hints everywhere. `from __future__ import annotations` not needed (3.12 baseline).
 - **Async:** everything is async. No sync DB calls in handlers.
 - **Secrets:** never committed. Real values go in `.env` (gitignored). `.env.example` lists every variable with safe defaults or empty placeholders.
 - **Versions:** pin minor versions in `pyproject.toml` (`>=`), pin exact resolutions in `uv.lock`. No `latest`. Bumps are intentional, not automated.
 - **Migrations:** Alembic, autogenerate from models, but **always review the diff** before committing.
 - **DUW API:** treat as read-only and unstable. Wrap all field access in defensive `.get()` with sane defaults.
+
+## User-facing update notes (release broadcasts)
+
+When announcing a release to subscribers, follow this format. Keep it short — people skim. One message **per bot language**, formal address (see Tone above), HTML parse mode.
+
+- **Header:** `✨ <b>Vyklik update</b>` — no version number, users don't care.
+- **Body:** one line per *user-visible* change, most useful first. Each line = emoji + `<b>/command</b>` (or feature name) + what changed, framed as the benefit. Skip internal/cosmetic changes (schema, refactors, avatar, deploy).
+- **Sign-off:** one short friendly line (e.g. "Спасибо, что пользуетесь ботом! 💙").
+- **Localize** into every bot language (PL/RU/BE). At send time, cohorts with no users simply receive nothing — no need to drop the text.
+
+Delivery: a one-off script (run in the bot container), *not* i18n keys — these are one-time. Select `telegram_id, language FROM users WHERE NOT blocked`, pick the text by each user's `language` (same fallback chain as the bot: `be→ru→pl`, `ru→pl`), send via the bot token, catch `TelegramForbidden` → mark `blocked`, throttle to ~30 msg/s. Optionally send a test to the owner's id first.
 
 ## Layout
 
